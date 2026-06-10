@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitBook Voice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;height:100vh;overflow:hidden;background:#f4f5f7;}
+.sidebar{width:232px;background:#0f1623;color:#fff;display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sidebar-logo h1{font-size:15px;font-weight:600;color:#fff;letter-spacing:-0.2px;}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px;}
+.persona-selector{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.persona-selector label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.35);display:block;margin-bottom:5px;}
+.persona-selector select{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:6px 9px;border-radius:5px;font-size:12px;cursor:pointer;font-family:inherit;}
+.sidebar-nav{flex:1;padding:10px 0;overflow-y:auto;}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:0.9px;color:rgba(255,255,255,0.28);padding:8px 18px 3px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 18px;color:rgba(255,255,255,0.55);cursor:pointer;font-size:13px;transition:all 0.12s;border-left:2px solid transparent;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.09);border-left-color:#6366f1;}
+.nav-item i{font-size:15px;width:17px;}
+.sidebar-bottom{padding:14px;border-top:1px solid rgba(255,255,255,0.07);}
+.icp-badge{background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.35);border-radius:6px;padding:8px 11px;cursor:pointer;}
+.icp-badge p{font-size:10px;color:rgba(255,255,255,0.45);}
+.icp-badge strong{font-size:12px;color:#fff;font-weight:500;}
+.main{flex:1;overflow-y:auto;background:#f4f5f7;}
+.section{display:none;padding:28px 32px;max-width:980px;}
+.section.active{display:block;}
+.section-header{margin-bottom:24px;}
+.section-header h2{font-size:19px;font-weight:600;color:#111;letter-spacing:-0.3px;}
+.section-header p{font-size:13px;color:#666;margin-top:3px;}
+.card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:18px 20px;margin-bottom:14px;}
+.card-sm{background:#fff;border-radius:7px;border:1px solid #e5e7eb;padding:12px 14px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500;}
+.badge-draft{background:#fef3c7;color:#92400e;}
+.badge-ready{background:#dbeafe;color:#1e40af;}
+.badge-published{background:#d1fae5;color:#065f46;}
+.badge-icp-high{background:#d1fae5;color:#065f46;}
+.badge-icp-mid{background:#fef3c7;color:#92400e;}
+.badge-icp-low{background:#fee2e2;color:#991b1b;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:6px;font-size:13px;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#333;transition:all 0.12s;font-family:inherit;}
+.btn:hover{background:#f5f5f5;}
+.btn-primary{background:#6366f1;color:#fff;border-color:#6366f1;}
+.btn-primary:hover{background:#4f46e5;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.pick-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:18px;transition:box-shadow 0.12s;}
+.pick-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.07);}
+.pick-tag{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:9px;}
+.pick-tag.trend{color:#0891b2;}
+.pick-tag.media{color:#7c3aed;}
+.pick-tag.evergreen{color:#059669;}
+.pick-tag.amplify{color:#d97706;}
+.pick-hook{font-size:14px;font-weight:500;color:#111;line-height:1.5;margin-bottom:8px;}
+.pick-angle{font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;}
+.pick-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:11px;color:#888;}
+.post-draft{background:#f8f9ff;border:1px solid #e0e7ff;border-radius:7px;padding:14px;font-size:13px;line-height:1.75;color:#222;white-space:pre-wrap;display:none;margin-top:10px;}
+.post-draft.open{display:block;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;flex-shrink:0;}
+.trend-category-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#888;margin:20px 0 10px;}
+.trend-card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:8px;}
+.trend-card h4{font-size:13px;font-weight:500;color:#111;margin-bottom:5px;}
+.trend-card p{font-size:12px;color:#555;line-height:1.6;}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.metric-card{background:#f8f9fa;border-radius:8px;padding:13px 15px;}
+.metric-card .label{font-size:11px;color:#888;margin-bottom:5px;}
+.metric-card .value{font-size:21px;font-weight:600;color:#111;}
+.metric-card .sublabel{font-size:11px;color:#bbb;margin-top:2px;}
+.icp-tag{display:inline-flex;align-items:center;gap:3px;background:#f0f0f0;border-radius:4px;padding:3px 7px;font-size:12px;color:#333;margin:2px;}
+.icp-input-group{margin-bottom:18px;}
+.icp-input-group label{font-size:13px;font-weight:500;color:#333;display:block;margin-bottom:5px;}
+.icp-input-group input{padding:7px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;}
+.calendar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.cal-day{background:#fff;border-radius:8px;border:1px solid #e5e7eb;min-height:160px;padding:11px;}
+.cal-day-header{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:9px;}
+.cal-slot{border-radius:4px;padding:6px 8px;font-size:11px;margin-bottom:5px;}
+.cal-marketing{background:#dbeafe;color:#1e40af;}
+.cal-advocate{background:#fef3c7;color:#92400e;}
+.cal-pm{background:#ede9fe;color:#5b21b6;}
+.tabs{display:flex;border-bottom:1px solid #e5e7eb;margin-bottom:20px;}
+.tab{padding:9px 18px;font-size:13px;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.12s;}
+.tab:hover{color:#333;}
+.tab.active{color:#6366f1;border-bottom-color:#6366f1;font-weight:500;}
+.empty-state{text-align:center;padding:48px 24px;color:#aaa;}
+.empty-state i{font-size:36px;display:block;margin-bottom:12px;color:#ddd;}
+.empty-state p{font-size:13px;line-height:1.6;}
+.empty-state strong{color:#888;}
+.what-works{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:9px;padding:14px 18px;margin-bottom:18px;}
+.what-works h4{font-size:12px;font-weight:600;color:#0369a1;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.what-works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.what-works-item{font-size:12px;color:#444;}
+.what-works-item strong{font-weight:600;color:#111;}
+.post-row{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid #f0f0f0;}
+.post-row:last-child{border-bottom:none;}
+.post-row-body{flex:1;}
+.post-row-title{font-size:13px;font-weight:500;color:#111;margin-bottom:3px;line-height:1.5;}
+.post-row-meta{font-size:11px;color:#888;display:flex;gap:10px;margin-top:4px;}
+.post-row-stats{display:flex;gap:14px;min-width:260px;align-items:center;}
+.stat-item{text-align:center;}
+.stat-item .val{font-size:14px;font-weight:600;color:#111;display:block;}
+.stat-item .lbl{font-size:10px;color:#888;}
+.chart-container{position:relative;height:230px;margin-top:6px;}
+.toast{position:fixed;bottom:22px;right:22px;background:#1a1a1a;color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;display:none;z-index:999;}
+.toast.show{display:block;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:800;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:26px;max-width:500px;width:100%;margin:20px;}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:7px;color:#111;}
+.modal p{font-size:13px;color:#555;line-height:1.65;margin-bottom:13px;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+textarea{width:100%;padding:11px;border:1px solid #e0e0e0;border-radius:7px;font-family:inherit;font-size:13px;line-height:1.6;color:#333;resize:vertical;}
+.char-count{font-size:11px;color:#888;text-align:right;margin-top:4px;}
+.icp-persona-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid;}
+.icp-dev{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.icp-pm{background:#f0fdf4;color:#166534;border-color:#bbf7d0;}
+.icp-tw{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff;}
+.targeting-block{background:#f8fafc;border-radius:7px;padding:10px 12px;margin-top:10px;border:1px solid #e5e7eb;}
+.targeting-block h5{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:#888;margin-bottom:7px;}
+.setup-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+.setup-banner i{font-size:18px;color:#d97706;flex-shrink:0;margin-top:1px;}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>GitBook Voice</h1>
+    <p>LinkedIn content engine</p>
+  </div>
+  <div class="persona-selector">
+    <label>Viewing as</label>
+    <select id="globalPersona" onchange="switchPersona(this.value)">
+      <option value="suzy">Suzy Everist — Product Marketing</option>
+      <option value="tal">Tal Gluck — DevRel</option>
+      <option value="addison">Addison Schultz — DevRel</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">This week</div>
+    <div class="nav-item active" onclick="showSection('weekly',this)"><i class="ti ti-sparkles"></i> Weekly Brief</div>
+    <div class="nav-item" onclick="showSection('drafts',this)"><i class="ti ti-file-text"></i> Drafts Queue</div>
+    <div class="nav-item" onclick="showSection('cadence',this)"><i class="ti ti-calendar"></i> Cadence Planner</div>
+    <div class="nav-section-label">Discover</div>
+    <div class="nav-item" onclick="showSection('trends',this)"><i class="ti ti-trending-up"></i> Trend Feed</div>
+    <div class="nav-item" onclick="showSection('transcripts',this)"><i class="ti ti-microphone"></i> Transcripts</div>
+    <div class="nav-section-label">Insights</div>
+    <div class="nav-item" onclick="showSection('analytics',this)"><i class="ti ti-chart-bar"></i> Analytics</div>
+    <div class="nav-item" onclick="showSection('icp',this)"><i class="ti ti-target"></i> ICP & Audience</div>
+    <div class="nav-section-label">Team</div>
+    <div class="nav-item" onclick="showSection('personas',this)"><i class="ti ti-users"></i> All Personas</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="icp-badge" onclick="showSection('icp',null)">
+      <p>Team ICP match rate</p>
+      <strong>— Add posts to track</strong>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- WEEKLY BRIEF -->
+<div id="section-weekly" class="section active">
+  <div class="section-header">
+    <h2>Weekly brief — <span id="weeklyPersonaName">Suzy Everist</span></h2>
+    <p>3 post options tailored to your role and audience. Pick one to develop into a full draft.</p>
+  </div>
+  <div id="weeklyTargeting" style="margin-bottom:16px;"></div>
+  <div class="grid-2" id="weeklyPicks"></div>
+</div>
+
+<!-- DRAFTS -->
+<div id="section-drafts" class="section">
+  <div class="section-header">
+    <h2>Drafts queue — <span class="persona-label">Suzy Everist</span></h2>
+    <p>Your saved posts. Edit, approve, and push to LinkedIn before publishing.</p>
+  </div>
+  <div id="draftsContent"></div>
+</div>
+
+<!-- CADENCE -->
+<div id="section-cadence" class="section">
+  <div class="section-header">
+    <h2>Cadence planner</h2>
+    <p>Recommended posting schedule based on your role and LinkedIn growth research.</p>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="cadenceAvatar" class="avatar" style="background:#d1fae5;color:#065f46;">SE</div>
+      <div>
+        <p style="font-weight:600;font-size:14px;" id="cadencePersonaName">Suzy Everist</p>
+        <p style="font-size:12px;color:#666;" id="cadenceRec">Recommended: 3–4x per week · Mon, Wed, Thu, Fri</p>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <p style="font-size:11px;color:#888;">Best posting time</p>
+        <p style="font-weight:600;font-size:15px;" id="cadenceTime">8:30 AM</p>
+      </div>
+    </div>
+  </div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
+<!-- TRENDS -->
+<div id="section-trends" class="section">
+  <div class="section-header">
+    <h2>Trend feed</h2>
+    <p>Signals across AI, developer tools, and technical writing. Click to generate a post for any persona.</p>
+  </div>
+  <div id="trendsContent"></div>
+</div>
+
+<!-- TRANSCRIPTS -->
+<div id="section-transcripts" class="section">
+  <div class="section-header">
+    <h2>Transcript ingestion</h2>
+    <p>Paste a Granola transcript to extract tone signals and build a voice profile for each person.</p>
+  </div>
+  <div class="card" style="margin-bottom:12px;background:#f0fdf4;border-color:#bbf7d0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <i class="ti ti-plug-connected" style="font-size:18px;color:#16a34a;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:#166534;">Granola is connected</p>
+        <p style="font-size:12px;color:#15803d;">Ask Cowork: "Pull the transcript from my 1:1 with Tal last week and build his voice profile" — no copy-pasting needed.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:5px;">Assign to persona</label>
+      <select style="padding:7px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;width:100%;">
+        <option>Suzy Everist — Product Marketing</option>
+        <option>Tal Gluck — DevRel</option>
+        <option>Addison Schultz — DevRel</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:5px;">Paste transcript</label>
+      <textarea rows="9" placeholder="Paste your Granola transcript, interview notes, or any meeting recording here..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="analyzeTranscript()"><i class="ti ti-cpu"></i> Analyze & extract voice signals</button>
+  </div>
+  <div id="transcriptResult" style="display:none;" class="card">
+    <h4 style="font-size:14px;font-weight:600;margin-bottom:14px;color:#111;">Voice signals extracted</h4>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Recurring phrases</p><p style="font-size:12px;color:#333;line-height:1.75;">Extracted from transcript — will appear here after analysis.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Strong POVs</p><p style="font-size:12px;color:#333;line-height:1.75;">Clear opinions and stances detected in the transcript.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Tone signals</p><p style="font-size:12px;color:#333;line-height:1.75;">Vocabulary patterns, sentence rhythm, formality level.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Topics they care about</p><p style="font-size:12px;color:#333;line-height:1.75;">Subject areas and themes that come up repeatedly.</p></div>
+    </div>
+    <div style="margin-top:13px;display:flex;gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="showToast('Voice signals saved to profile')">Save to voice profile</button>
+      <button class="btn btn-sm" onclick="document.getElementById('transcriptResult').style.display='none'">Discard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="section-analytics" class="section">
+  <div class="section-header">
+    <h2>Analytics — <span class="persona-label">Suzy Everist</span></h2>
+    <p>Post performance. Patterns feed back into weekly brief picks once you have published posts.</p>
+  </div>
+  <div class="metric-grid">
+    <div class="metric-card"><div class="label">Total impressions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Total likes</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Avg. engagement</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Avg. ICP match</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'perf-posts')">Post performance</div>
+    <div class="tab" onclick="switchTab(this,'perf-patterns')">What's working</div>
+  </div>
+  <div id="perf-posts">
+    <div class="card">
+      <div class="empty-state">
+        <i class="ti ti-chart-bar"></i>
+        <p><strong>No published posts yet.</strong><br>Connect your LinkedIn account and publish your first post to start tracking performance and ICP match rate.</p>
+      </div>
+    </div>
+  </div>
+  <div id="perf-patterns" style="display:none;">
+    <div class="card">
+      <div class="empty-state">
+        <i class="ti ti-bulb"></i>
+        <p><strong>Patterns will appear here once you have a few published posts.</strong><br>The app will identify your best formats, topics, and posting times automatically.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ICP -->
+<div id="section-icp" class="section">
+  <div class="section-header">
+    <h2>ICP & audience quality</h2>
+    <p>Define your ideal customer profiles and track how well each person's posts reach them over time.</p>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'icp-define')">ICP personas</div>
+    <div class="tab" onclick="switchTab(this,'icp-tracker')">Audience tracker</div>
+    <div class="tab" onclick="switchTab(this,'icp-leaderboard')">Team leaderboard</div>
+  </div>
+
+  <div id="icp-define">
+    <p style="font-size:13px;color:#555;margin-bottom:16px;">GitBook targets three ICP personas. Each team member owns content for one or more. Match data will populate once posts are connected to LinkedIn.</p>
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="card" style="border-top:3px solid #1d4ed8;">
+        <div style="margin-bottom:10px;"><span class="icp-persona-pill icp-dev"><i class="ti ti-code" style="font-size:10px;"></i> Developer</span></div>
+        <p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">Senior engineers, tech leads, and engineering managers evaluating or using developer tools. Pain: fragmented docs slow their team down.</p>
+        <p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;">Addison Schultz</span>
+          <span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;">Suzy Everist</span>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid #16a34a;">
+        <div style="margin-bottom:10px;"><span class="icp-persona-pill icp-pm"><i class="ti ti-layout-board" style="font-size:10px;"></i> Product Manager</span></div>
+        <p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">PMs and product leaders at mid-market to enterprise SaaS. Pain: misalignment between teams due to scattered specs and decisions.</p>
+        <p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;">Suzy Everist</span>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid #7e22ce;">
+        <div style="margin-bottom:10px;"><span class="icp-persona-pill icp-tw"><i class="ti ti-writing" style="font-size:10px;"></i> Technical Writer</span></div>
+        <p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">Technical writers and documentation leads at growing engineering teams. Pain: no system to keep docs accurate and current at scale.</p>
+        <p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;font-size:11px;">Tal Gluck</span>
+          <span style="background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;font-size:11px;">Addison Schultz</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:16px;">Firmographic criteria</h4>
+      <div class="icp-input-group">
+        <label>Job titles</label>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px;" id="icpTitles">
+          <span class="icp-tag">Head of Engineering <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">VP Product <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">CTO <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Technical Writer <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Developer Advocate <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Engineering Manager <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+        </div>
+        <input type="text" placeholder="Add a title and press Enter" onkeydown="addTag(event,'icpTitles')" style="width:300px;">
+      </div>
+      <div class="icp-input-group">
+        <label>Seniority</label>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox"> IC</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> Senior</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> Lead / Manager</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> Director</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> VP</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> C-Suite</label>
+        </div>
+      </div>
+      <div class="icp-input-group">
+        <label>Industries</label>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px;" id="icpIndustries">
+          <span class="icp-tag">SaaS <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Developer Tools <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Fintech <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Enterprise Software <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+          <span class="icp-tag">Cloud Infrastructure <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span>
+        </div>
+        <input type="text" placeholder="Add an industry and press Enter" onkeydown="addTag(event,'icpIndustries')" style="width:300px;">
+      </div>
+      <div class="icp-input-group">
+        <label>Company size</label>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox"> 1–50</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> 50–500</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> 500–5,000</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;"><input type="checkbox" checked> 5,000+</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveICP()"><i class="ti ti-check"></i> Save ICP definition</button>
+    </div>
+  </div>
+
+  <div id="icp-tracker" style="display:none;">
+    <div class="card">
+      <div class="empty-state">
+        <i class="ti ti-target"></i>
+        <p><strong>No audience data yet.</strong><br>Once posts are published and LinkedIn is connected, you'll see a week-by-week chart of ICP match rate and total ICP reach here.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="icp-leaderboard" style="display:none;">
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:16px;">Team leaderboard — ICP match</h4>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="border-bottom:2px solid #f0f0f0;">
+          <th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">#</th>
+          <th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">Person</th>
+          <th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">Targeting</th>
+          <th style="text-align:right;padding:7px 0;color:#888;font-weight:500;">ICP match</th>
+          <th style="text-align:right;padding:7px 0;color:#888;font-weight:500;">Posts</th>
+          <th style="text-align:right;padding:7px 0;color:#888;font-weight:500;">ICP reach</th>
+        </tr></thead>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONAS -->
+<div id="section-personas" class="section">
+  <div class="section-header">
+    <h2>Team personas</h2>
+    <p>3 voice profiles. Click any card to switch, or go to Transcripts to build out a voice profile.</p>
+  </div>
+  <div class="grid-2" id="personasGrid"></div>
+</div>
+
+</main>
+
+<div class="modal-overlay" id="linkedinModal">
+  <div class="modal">
+    <h3>Push to LinkedIn</h3>
+    <p>To publish directly from GitBook Voice, connect via LinkedIn's OAuth API. Requires a LinkedIn Developer App with <strong>w_member_social</strong> permission.</p>
+    <p>Once connected, posts are pushed to each person's LinkedIn for a final one-click review before going live.</p>
+    <div style="background:#f8f9fa;border-radius:6px;padding:11px 13px;font-size:12px;color:#555;line-height:1.7;margin-bottom:14px;">
+      <strong>Setup steps</strong><br>
+      1. Create a LinkedIn Developer App at developer.linkedin.com<br>
+      2. Request <code>w_member_social</code> + <code>r_liteprofile</code> scopes<br>
+      3. Add your OAuth callback URL<br>
+      4. Paste your Client ID and Secret below
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="showToast('LinkedIn connection coming soon')">Connect LinkedIn account</button>
+      <button class="btn btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const ICP_TYPES = {
+  dev:  {label:'Developer',        cls:'icp-dev', icon:'ti-code'},
+  pm:   {label:'Product Manager',  cls:'icp-pm',  icon:'ti-layout-board'},
+  tw:   {label:'Technical Writer', cls:'icp-tw',  icon:'ti-writing'}
+};
+
+const personas = {
+  suzy:{
+    name:'Suzy Everist', role:'Product Marketing', initials:'SE', color:'#d1fae5', tc:'#065f46',
+    targeting:['pm','dev'],
+    targetingNote:'Suzy reaches PMs and developers — positioning GitBook as the platform that aligns both audiences.',
+    angle:'Positioning in ambiguous categories, ABM-driven paid strategy, and translating developer tools into language that makes budget holders say yes',
+    tone:'Conversational strategist. Leads with real data ("our CTR is 0.25%, best practice is 0.4%") before the interpretation. Naturally reframes everything as a positioning question — "what problem are we solving for them?" Category-tension thinker who\'s comfortable with market ambiguity: "we\'re in this weird period where that term hasn\'t been solidified." Collaborative builder who phrases opinions as explorations. Balances vision with buyer readiness — if your one-liner requires defending, it\'s not done yet. Critiques marketing from the inside without being cynical. Short punchy sentences mixed with longer exploratory ones. Ends on an open question or an unresolved edge, not a tidy bow.',
+    media:[], voiceReady:true,
+    freq:'3–4x per week', days:'Mon, Wed, Thu, Fri', time:'8:30 AM',
+    cadence:{
+      mon:[{t:'GTM / positioning take',s:'8:30 AM',cls:'cal-marketing'}],
+      tue:[],
+      wed:[{t:'Competitive insight',s:'9:00 AM',cls:'cal-marketing'}],
+      thu:[{t:'Marketing framework',s:'8:30 AM',cls:'cal-marketing'}],
+      fri:[{t:'Campaign lesson',s:'4:00 PM',cls:'cal-marketing'}],
+      sat:[]
+    },
+    ww:null,
+    picks:[
+      {type:'trend',tag:'Trend take',
+       hook:"AI tools are quietly undermining your product's reputation. Most PMs don't know it yet.",
+       angle:'For product managers and developers: AI assistants are now where your users go for help first. If your docs are outdated, every wrong answer those tools give is on you.',
+       reach:'Est. 6–9k impressions',
+       post:`AI tools are quietly undermining your product's reputation. Most PMs don't know it yet.
+
+A developer uses Cursor or Claude to integrate with your API. The AI gives a confident answer based on your public docs. But the docs describe your product as it was two product cycles ago.
+
+The developer tries it. It fails. They don't file a ticket. They just stop.
+
+This shows up as an activation problem, a retention problem, a "why is our free-to-paid conversion stuck" problem. Nobody connects it back to documentation.
+
+The teams ahead of this are treating docs like a product surface. Someone owns them. They update on the same schedule as features. There is a process for flagging stale content.
+
+AI search has raised the stakes. When your docs are wrong, AI tools confidently repeat that wrong answer to everyone who asks.
+
+When did your team last check whether your docs reflect your current product?
+
+#ProductManagement #DeveloperExperience #Documentation #AI`},
+      {type:'media',tag:'Media reaction',
+       hook:"We tested LinkedIn ads against 170 developer and PM accounts. The thing that drove clicks wasn't what I expected.",
+       angle:'For PMs managing developer-facing products: what messaging actually resonates with technical audiences, and what falls flat. Practical learnings from real campaign data.',
+       reach:'Est. 5–8k impressions',
+       post:`We spent a month testing LinkedIn ads against a list of 170 developer and PM accounts. CTR: 0.25%. LinkedIn best practice is 0.4%.
+
+The ads that performed worst led with product UI screenshots. The ones that got traction named a specific workflow problem.
+
+Developers don't click ads. But they will click something that names a pain they recognize.
+
+The harder problem is what happens after the click. If the landing page opens with a tagline about "AI-native documentation" and doesn't immediately say what problem it solves, you've lost them.
+
+Most developer-facing marketing talks to the wrong person with the right message, or the right person with the wrong message. Getting both right at the same time is the actual work.
+
+What has been your best-performing angle for reaching technical audiences?
+
+#ProductManagement #DeveloperExperience #B2BMarketing #DeveloperTools`},
+      {type:'evergreen',tag:'Evergreen authority',
+       hook:"The fastest way to find which docs are hurting your activation rate takes about an afternoon.",
+       angle:'For PMs who own developer products: a practical method for identifying documentation gaps that quietly kill adoption, using data you already have.',
+       reach:'Est. 8–12k impressions',
+       post:`The fastest way to find which docs are hurting your activation rate takes an afternoon and costs nothing.
+
+Pull your 20 most common support tickets from the last 90 days. Extract the question each one is actually asking.
+
+Now search your documentation for each of those questions.
+
+Count how many return nothing useful, or surface an article that is clearly out of date.
+
+That is your documentation gap. In my experience it is also your activation gap. The lists tend to be identical.
+
+Most teams treat docs as a publishing problem: write them once, ship them, move on. The teams with the best activation rates treat them as a feedback loop. Support tickets are the feedback signal. They are just rarely framed that way.
+
+When did you last map your support queue to your docs coverage?
+
+#ProductManagement #DeveloperExperience #Documentation #ProductGrowth`},
+      {type:'amplify',tag:'Content amplify',
+       hook:"I have lived in Barcelona for three years. I am still learning Spanish. Then AI happened.",
+       angle:"Amplifies this week\'s GitBook blog on MCP vs skill.md. Written for PMs and developers who are also trying to keep up with the AI glossary — personal angle, quick explainer, link handoff.",
+       reach:'Est. 3–6k impressions',
+       source:'https://www.gitbook.com/blog/mcp-vs-skill-md-difference-why-you-need-both',
+       post:`I have lived in Barcelona for three years. I am still learning Spanish.
+
+Then AI happened and now I am learning two languages at once.
+
+MCP. skill.md. RAG pipelines. Context windows. Half the time I am nodding in meetings and quietly Googling the terms afterward.
+
+So when Steve and our content team put together a plain-English breakdown of MCP vs skill.md, I actually read the whole thing.
+
+The short version: MCP is how AI agents connect to your data. skill.md tells them what to do with it once they get there. You need both, and most teams are only building one.
+
+If you are also out here learning two languages right now, link is in the comments.
+
+#AI #ProductManagement #Documentation #DeveloperExperience`}
+    ],
+    drafts:[], posts:[]
+  },
+  tal:{
+    name:'Tal Gluck', role:'DevRel', initials:'TG', color:'#e0f2fe', tc:'#075985',
+    targeting:['tw'],
+    targetingNote:'Tal primarily reaches technical writers — building authority on documentation craft, tooling, and knowledge systems.',
+    angle:'Building developer communities, technical education, and helping teams build knowledge systems that actually work',
+    tone:'Not yet captured — add a Granola transcript to build Tal\'s voice profile.',
+    media:[], voiceReady:false,
+    freq:'3x per week', days:'Tuesday, Thursday, Friday', time:'9:00 AM',
+    cadence:{
+      mon:[],
+      tue:[{t:'Community / docs take',s:'9:00 AM',cls:'cal-advocate'}],
+      wed:[],
+      thu:[{t:'Technical insight',s:'9:30 AM',cls:'cal-advocate'}],
+      fri:[{t:'Week in DevRel',s:'4:30 PM',cls:'cal-advocate'}],
+      sat:[]
+    },
+    ww:null,
+    picks:[
+      {type:'trend',tag:'Trend take',
+       hook:"The technical writer's job has changed more in the last 18 months than in the previous decade. Not for the reason most people assume.",
+       angle:'For technical writers navigating a shifting role: a grounded take on where the durable value of the TW craft sits in a world with AI-generated first drafts.',
+       reach:'Est. 5–8k impressions',
+       post:`The technical writer's job has changed more in the last 18 months than in the previous decade. The reason is not AI replacing writers.
+
+The reason is that engineers are now generating more documentation than ever. AI tools make prose cheap to produce. A first draft that used to take a day now takes 20 minutes.
+
+What's left is harder to automate: knowing when a doc is wrong. Recognizing when the structure doesn't match how a user actually navigates a product. Catching contradictions across a 200-page knowledge base.
+
+The writers doing well right now shifted from "I write the docs" to "I own the documentation system." That is a different job. It requires different instincts. It is also much harder to replace.
+
+What has changed most in your TW workflow over the last year?
+
+#TechnicalWriting #Documentation #AITools #DocumentationStrategy`},
+      {type:'media',tag:'Media reaction',
+       hook:"Skill MD files are showing up in every developer tool. Most technical writers I've talked to aren't sure what to do with them.",
+       angle:'For technical writers who work with engineering teams: Skill MD is a new documentation surface being written without documentation discipline. Here is why it matters and what TWs should own.',
+       reach:'Est. 4–7k impressions',
+       post:`Skill MD files are appearing in almost every AI coding tool now. Most technical writers I have talked to are unsure what to make of them.
+
+A Skill MD is a structured document that tells an AI coding assistant how to work with a particular tool or codebase. It is documentation, but written to be read by a model, not a human. The format is new. The discipline required to write it well is not.
+
+Engineers are writing these right now, often without the documentation instincts that make them consistent and complete. Edge cases get missed. Terminology drifts across sections. There is no process for keeping them current when the product changes.
+
+This is a documentation problem. It is also a new surface for technical writers to own.
+
+The teams doing it well have a TW reviewing the Skill MD the same way they would review any external-facing doc. Voice is consistent. Coverage is complete. There is a process for updates.
+
+Have you worked on a Skill MD yet, or is this still landing in engineering at your company?
+
+#TechnicalWriting #Documentation #AITools #DeveloperExperience`},
+      {type:'evergreen',tag:'Evergreen authority',
+       hook:"The structure your team creates naturally and the structure your users actually need are almost never the same thing.",
+       angle:'An evergreen take on information architecture — the most common structural mistake in developer documentation and the single question that fixes it.',
+       reach:'Est. 6–10k impressions',
+       post:`The documentation structure your team creates naturally and the structure your users actually need are almost never the same thing.
+
+Teams organize docs around how the product was built: by feature, by team, by release. Users navigate docs around what they are trying to do.
+
+A developer integrating a payments API does not care which team owns the webhook logic. They want to find "how do I handle failed payments" without navigating three different sections.
+
+The gap between product-centric structure and task-centric structure is where most documentation friction lives. It is also usually invisible until you watch someone actually try to use your docs.
+
+You do not need a complete rewrite to fix it. You need a different question asked during the planning stage: what is this person trying to accomplish, and does our structure make that path clear?
+
+How do you decide where a new doc lives when you are starting from scratch?
+
+#TechnicalWriting #InformationArchitecture #DocumentationStrategy #DeveloperExperience`},
+      {type:'amplify',tag:'Content amplify',
+       hook:"Just got back from Write the Docs Portland. Five things still on my mind.",
+       angle:"Amplifies the GitBook blog on Write the Docs Portland 2026. Tal was there — first-person angle lands well with his technical writer audience.",
+       reach:'Est. 3–5k impressions',
+       source:'https://www.gitbook.com/blog/write-the-docs-portland-2026',
+       post:`Just got back from Write the Docs Portland.
+
+Five things still on my mind.
+
+The conversation about AI and technical writing is more nuanced than the headlines suggest. Most people in that room are not worried about replacement. They are trying to figure out what good looks like when AI handles the first draft.
+
+The short answer, from a lot of conversations last week: structure and accuracy. Those are the things AI gets wrong most consistently. Those are also the things that matter most to readers.
+
+We wrote up our five takeaways from the week. Link in the comments.
+
+What did you take away if you were there?
+
+#TechnicalWriting #WriteTheDocs #Documentation #DevRel`}
+    ],
+    drafts:[], posts:[]
+  },
+  addison:{
+    name:'Addison Schultz', role:'DevRel', initials:'AS', color:'#ede9fe', tc:'#5b21b6',
+    targeting:['dev','tw'],
+    targetingNote:'Addison bridges developers and technical writers — focusing on the craft of documentation and developer education.',
+    angle:'Technical content strategy, developer education, and the craft of documentation that actually helps people build',
+    tone:'Not yet captured — add a Granola transcript to build Addison\'s voice profile.',
+    media:[], voiceReady:false,
+    freq:'3x per week', days:'Monday, Wednesday, Friday', time:'9:30 AM',
+    cadence:{
+      mon:[{t:'Docs insight',s:'9:30 AM',cls:'cal-pm'}],
+      tue:[],
+      wed:[{t:'Education take',s:'9:30 AM',cls:'cal-pm'}],
+      thu:[],
+      fri:[{t:'Content craft',s:'10:00 AM',cls:'cal-pm'}],
+      sat:[]
+    },
+    ww:null,
+    picks:[
+      {type:'trend',tag:'Trend take',
+       hook:"The line between developer docs and technical writing is blurring. Most teams have not updated their process to match.",
+       angle:'For developers and technical writers who work on documentation together: the collaboration model most teams use is outdated for how documentation actually gets made now.',
+       reach:'Est. 5–8k impressions',
+       post:`The line between developer documentation and technical writing is blurring. Most teams have not updated their process to match.
+
+Engineers write more documentation than ever, driven by AI tools that make prose cheap. Technical writers make more tooling decisions, driven by the complexity of modern documentation platforms.
+
+The teams struggling most are the ones where these roles still operate separately. Writers reviewing code examples they cannot run. Engineers writing conceptual guides they do not have the context to explain accurately.
+
+The teams doing it well have figured out that the asset is the documentation system, not the individual doc. Someone owns the structure. Someone owns the tooling. Someone owns quality across both. Those might be the same person or different people depending on team size.
+
+What does collaboration between devs and TWs look like on your team right now?
+
+#TechnicalWriting #DeveloperExperience #Documentation #DevRel`},
+      {type:'media',tag:'Media reaction',
+       hook:"The Write the Docs annual survey is out. One number I keep coming back to.",
+       angle:'For technical writers and developers who work closely with documentation: a practical reading of what the data says about where documentation work actually breaks down.',
+       reach:'Est. 4–6k impressions',
+       post:`The Write the Docs annual survey is out.
+
+The number I keep coming back to: a significant portion of technical writers report spending more than half their time on work that is not writing — reviews, tooling maintenance, stakeholder coordination, ticket triage.
+
+This matches what I see. The role has grown in scope without the title or resources catching up.
+
+There is a version of this that makes sense. Documentation work is more than writing, and the best technical writers understand the whole system. But there is another version where "does everything" means "owns nothing," and the quality of the actual docs suffers.
+
+The distinction is usually whether the TW has authority to say no. To push back on a request that does not serve users. To prioritize based on impact rather than whoever asked last.
+
+Scope without authority is just more work.
+
+How do you protect time for the work that actually matters?
+
+#TechnicalWriting #WriteTheDocs #DocumentationStrategy #DevRel`},
+      {type:'evergreen',tag:'Evergreen authority',
+       hook:"The API doc problem nobody talks about: the reference is complete and developers still can't integrate your product.",
+       angle:'For developers frustrated by technically correct but practically useless docs, and for technical writers trying to understand why thorough API reference isn\'t helping adoption.',
+       reach:'Est. 7–11k impressions',
+       post:`The API documentation problem nobody talks about: the reference is complete and developers still cannot integrate your product.
+
+Every field is documented. Every endpoint is listed. Auth is covered. A developer trying to build a basic integration still spends two hours in your community Slack asking questions that are not in the docs.
+
+The problem is usually not missing information. It is missing structure. The reference is organized around what the API does. The developer needs something organized around what they are trying to accomplish.
+
+The fix is almost always the same: a getting started guide that walks through the most common use case from start to finish, with working code. Not a conceptual overview. Not a list of everything the API can do. A single working example, from auth to first successful response.
+
+Most teams have this on the roadmap. Few treat it as urgent. It is usually the highest-leverage documentation investment a developer-facing team can make.
+
+What is the one doc your users need that does not exist yet?
+
+#TechnicalWriting #DeveloperExperience #APIDocs #Documentation`},
+      {type:'amplify',tag:'Content amplify',
+       hook:"We built a complete docs site using Claude, MCP, and skill.md. Here is what actually happened.",
+       angle:"Amplifies the GitBook engineering blog on building with Claude, MCP and skill.md. Real practitioner takeaways for developers and technical writers curious about the actual experience.",
+       reach:'Est. 4–7k impressions',
+       source:'https://www.gitbook.com/blog/blog-building-documentation-with-claude-mcp-and-skill-md',
+       post:`We built a complete docs site using Claude, MCP, and skill.md. Here is what actually happened.
+
+The MCP connection worked. The agent could retrieve docs. But it still could not produce a coherent system on its own.
+
+What changed it: adding the skill.md file. Once the agent had behavioral instructions alongside the data connection, it could work through tasks reliably.
+
+The lesson is not that AI solves documentation. It is that documentation quality determines how useful AI can be. Bad docs going in means bad agent behavior coming out.
+
+Full writeup in the comments. Worth reading if you are building anything agent-related.
+
+What has been your experience combining AI tools with documentation?
+
+#TechnicalWriting #DeveloperExperience #AI #Documentation`}
+    ],
+    drafts:[], posts:[]
+  }
+};
+
+let currentPersona='suzy';
+
+function renderTargetingPills(targeting){
+  return targeting.map(t=>{
+    const typ=ICP_TYPES[t];
+    return `<span class="icp-persona-pill ${typ.cls}"><i class="ti ${typ.icon}" style="font-size:10px;"></i> ${typ.label}</span>`;
+  }).join(' ');
+}
+
+function switchPersona(id){
+  currentPersona=id;
+  const p=personas[id];
+  document.getElementById('weeklyPersonaName').textContent=p.name;
+  document.querySelectorAll('.persona-label').forEach(el=>el.textContent=p.name);
+  const ca=document.getElementById('cadenceAvatar');
+  ca.textContent=p.initials; ca.style.background=p.color; ca.style.color=p.tc;
+  document.getElementById('cadencePersonaName').textContent=p.name;
+  document.getElementById('cadenceRec').textContent=`Recommended: ${p.freq} · ${p.days}`;
+  document.getElementById('cadenceTime').textContent=p.time;
+  renderWeeklyPicks(); renderDrafts(); renderCalendar(); renderAnalyticsSection();
+}
+
+function showSection(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(name==='personas') renderPersonas();
+  if(name==='trends') renderTrends();
+  if(name==='icp'&&document.getElementById('icp-leaderboard').style.display!=='none') renderLeaderboard();
+}
+
+function renderWeeklyPicks(){
+  const p=personas[currentPersona];
+  // voice not ready banner
+  const banner = !p.voiceReady
+    ? `<div class="setup-banner"><i class="ti ti-microphone"></i><div><p style="font-size:13px;font-weight:500;color:#92400e;margin-bottom:3px;">Voice profile not yet set up for ${p.name}</p><p style="font-size:12px;color:#b45309;line-height:1.6;">These posts use a generic tone. Add a Granola transcript to personalise them to ${p.name.split(' ')[0]}'s actual voice.</p></div></div>`
+    : '';
+  document.getElementById('weeklyTargeting').innerHTML=`
+    ${banner}
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;">
+      <span style="font-size:12px;color:#888;font-weight:500;">Targeting:</span>
+      ${renderTargetingPills(p.targeting)}
+      <span style="font-size:12px;color:#666;margin-left:4px;">— ${p.targetingNote}</span>
+    </div>
+  `;
+  document.getElementById('weeklyPicks').innerHTML=p.picks.map((pk,i)=>`
+    <div class="pick-card">
+      <div class="pick-tag ${pk.type}">${pk.tag}</div>
+      <div class="pick-hook">"${pk.hook}"</div>
+      <div class="pick-angle">${pk.angle}</div>
+      ${pk.source?`<div style="margin-bottom:8px;"><a href="${pk.source}" target="_blank" style="font-size:11px;color:#d97706;text-decoration:none;display:inline-flex;align-items:center;gap:3px;"><i class="ti ti-external-link" style="font-size:11px;"></i> Source article</a></div>`:''}
+      <div class="pick-meta"><span>📊 ${pk.reach}</span><span>📅 ${p.days.split(',')[0].trim()} ${p.time}</span></div>
+      <div class="post-draft" id="pd-${currentPersona}-${i}">${pk.post}</div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="developPick('${currentPersona}',${i})">Develop this post</button>
+        <button class="btn btn-sm" onclick="saveDraft()"><i class="ti ti-bookmark"></i> Save</button>
+      </div>
+      <div id="da-${currentPersona}-${i}" style="display:none;margin-top:8px;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="copyPost('${currentPersona}',${i})"><i class="ti ti-copy"></i> Copy</button>
+          <button class="btn btn-sm" onclick="openLinkedIn()"><i class="ti ti-brand-linkedin"></i> Push to LinkedIn</button>
+        </div>
+        <div class="char-count" id="cc-${currentPersona}-${i}"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function developPick(pid,i){
+  const d=document.getElementById(`pd-${pid}-${i}`);
+  const a=document.getElementById(`da-${pid}-${i}`);
+  const open=d.classList.toggle('open');
+  a.style.display=open?'block':'none';
+  if(open){const cc=document.getElementById(`cc-${pid}-${i}`);if(cc)cc.textContent=`${d.textContent.length} / 3,000 characters`;}
+}
+
+function copyPost(pid,i){
+  const d=document.getElementById(`pd-${pid}-${i}`);
+  if(d) navigator.clipboard.writeText(d.textContent).then(()=>showToast('Copied to clipboard'));
+}
+
+function saveDraft(){showToast('Draft saved to your queue');}
+
+function renderDrafts(){
+  const p=personas[currentPersona];
+  const targetingBar=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;margin-bottom:12px;"><span style="font-size:12px;color:#888;font-weight:500;">Targeting:</span>${renderTargetingPills(p.targeting)}</div>`;
+  if(!p.drafts.length){
+    document.getElementById('draftsContent').innerHTML=targetingBar+`<div class="card"><div class="empty-state"><i class="ti ti-file-text"></i><p><strong>No drafts yet.</strong><br>Develop a post from your Weekly Brief or generate one from the Trend Feed to save your first draft.</p></div></div>`;
+    return;
+  }
+  document.getElementById('draftsContent').innerHTML=targetingBar+p.drafts.map(d=>`
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap;">
+            <span class="badge badge-${d.status}">${d.status.charAt(0).toUpperCase()+d.status.slice(1)}</span>
+            ${d.icpScore!=null?`<span class="badge ${d.icpScore>=60?'badge-icp-high':d.icpScore>=40?'badge-icp-mid':'badge-icp-low'}">ICP est. ${d.icpScore}%</span>`:''}
+          </div>
+          <p style="font-size:13px;font-weight:500;color:#111;line-height:1.5;margin-bottom:5px;">${d.title}</p>
+          <p style="font-size:11px;color:#888;">${d.format} · Saved ${d.date}</p>
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0;">
+          <button class="btn btn-sm"><i class="ti ti-edit"></i> Edit</button>
+          <button class="btn btn-sm" onclick="showToast('Copied to clipboard')"><i class="ti ti-copy"></i></button>
+          <button class="btn btn-primary btn-sm" onclick="openLinkedIn()"><i class="ti ti-brand-linkedin"></i> Push</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCalendar(){
+  const p=personas[currentPersona];
+  const days=['mon','tue','wed','thu','fri'];
+  const labels={mon:'Monday',tue:'Tuesday',wed:'Wednesday',thu:'Thursday',fri:'Friday'};
+  document.getElementById('calendarGrid').innerHTML=days.map(day=>`
+    <div class="cal-day">
+      <div class="cal-day-header">${labels[day]}</div>
+      ${p.cadence[day].length
+        ? p.cadence[day].map(s=>`<div class="cal-slot ${s.cls}"><strong>${s.s}</strong><br>${s.t}</div>`).join('')
+        : '<div style="font-size:11px;color:#ccc;padding:6px 0;">Rest day</div>'}
+    </div>
+  `).join('');
+}
+
+function renderAnalyticsSection(){
+  const p=personas[currentPersona];
+  // metrics always show empty state since no real data
+  document.querySelector('#section-analytics .metric-grid').innerHTML=`
+    <div class="metric-card"><div class="label">Total impressions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Total likes</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Avg. engagement</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Avg. ICP match</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+  `;
+}
+
+function renderTrends(){
+  const trends={
+    'AI & LLMs':[
+      {title:"LLMs are writing API reference — and nobody's reviewing it",summary:"Teams are shipping AI-generated API docs at scale. Early data shows 1-in-4 contain errors that block developer adoption.",persona:'Addison Schultz'},
+      {title:"The hallucination problem in technical documentation",summary:"AI-generated docs have a reliability problem. Companies relying purely on LLMs for technical content are seeing support ticket spikes.",persona:'Tal Gluck'},
+      {title:"AI documentation tools: feature war vs. outcome war",summary:"Dozens of tools are adding AI features. The question is whether teams care about AI or about better documentation outcomes.",persona:'Suzy Everist'}
+    ],
+    'Developer Tools':[
+      {title:"The docs-as-code movement is hitting enterprise",summary:"What started in open source is now standard in engineering orgs over 200 people. Git-based documentation workflows are the new norm.",persona:'Addison Schultz'},
+      {title:"Developer onboarding time: the hidden cost nobody measures",summary:"Poor documentation adds 3–6 weeks to developer onboarding in mid-market companies. Teams that measure it see 40% improvement.",persona:'Suzy Everist'},
+      {title:"Shift-left documentation: writing docs before the code ships",summary:"Leading engineering teams are treating documentation as a prerequisite for feature launch, not an afterthought.",persona:'Tal Gluck'}
+    ],
+    'Technical Writing':[
+      {title:"Technical writers are becoming knowledge architects",summary:"The role is evolving fast. The best tech writers in 2026 are less 'wordsmith' and more 'information system designer.'",persona:'Addison Schultz'},
+      {title:"Measuring documentation quality: the metrics that actually matter",summary:"Beyond page views: teams now track search success rate, time-to-answer, and support deflection as documentation KPIs.",persona:'Suzy Everist'}
+    ]
+  };
+  document.getElementById('trendsContent').innerHTML=Object.entries(trends).map(([cat,items])=>`
+    <div class="trend-category-label">${cat}</div>
+    ${items.map(t=>`
+      <div class="trend-card">
+        <div style="flex:1;"><h4>${t.title}</h4><p>${t.summary}</p><p style="font-size:11px;color:#888;margin-top:5px;">Best fit: ${t.persona}</p></div>
+        <div style="flex-shrink:0;"><button class="btn btn-primary btn-sm" onclick="showToast('Post generated — saved to weekly brief')">Generate post</button></div>
+      </div>
+    `).join('')}
+  `).join('');
+}
+
+function renderPersonas(){
+  document.getElementById('personasGrid').innerHTML=Object.entries(personas).map(([id,p])=>`
+    <div class="card" style="cursor:pointer;" onclick="document.getElementById('globalPersona').value='${id}';switchPersona('${id}');showSection('weekly',null)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+        <div class="avatar" style="background:${p.color};color:${p.tc};">${p.initials}</div>
+        <div>
+          <p style="font-weight:600;font-size:14px;color:#111;">${p.name}</p>
+          <p style="font-size:11px;color:#666;">${p.role}</p>
+        </div>
+        <div style="margin-left:auto;">
+          ${p.voiceReady
+            ? '<span style="font-size:11px;background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;">Voice ready</span>'
+            : '<span style="font-size:11px;background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 7px;">No voice yet</span>'}
+        </div>
+      </div>
+      <p style="font-size:12px;color:#444;line-height:1.6;margin-bottom:10px;">${p.angle}</p>
+      ${p.voiceReady ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 13px;margin-bottom:10px;"><p style="font-size:10px;font-weight:600;color:#065f46;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">Voice fingerprint</p><p style="font-size:12px;color:#333;line-height:1.65;">${p.tone}</p></div>` : ''}
+      <div class="targeting-block">
+        <h5>Targeting ICP personas</h5>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">${renderTargetingPills(p.targeting)}</div>
+        <p style="font-size:11px;color:#666;line-height:1.5;">${p.targetingNote}</p>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:10px;">
+        <span>${p.freq}</span>
+        <span style="color:${p.voiceReady?'#059669':'#d97706'}">${p.voiceReady?'Voice profile active ✓':'Add transcript to activate'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLeaderboard(){
+  document.getElementById('leaderboardBody').innerHTML=Object.entries(personas).map(([id,p],i)=>`
+    <tr style="border-bottom:1px solid #f5f5f5;">
+      <td style="padding:10px 0;color:#888;font-size:13px;">${i+1}</td>
+      <td style="padding:10px 0;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="avatar" style="width:28px;height:28px;font-size:10px;background:${p.color};color:${p.tc};">${p.initials}</div>
+          <div><div style="font-size:13px;font-weight:500;">${p.name}</div><div style="font-size:11px;color:#888;">${p.role}</div></div>
+        </div>
+      </td>
+      <td style="padding:10px 0;">${renderTargetingPills(p.targeting)}</td>
+      <td style="text-align:right;padding:10px 0;font-size:13px;color:#bbb;">—</td>
+      <td style="text-align:right;padding:10px 0;font-size:13px;">0</td>
+      <td style="text-align:right;padding:10px 0;font-size:13px;color:#bbb;">—</td>
+    </tr>
+  `).join('');
+}
+
+function switchTab(el,targetId){
+  const section=el.closest('.section');
+  const prefix=targetId.split('-')[0]+'-';
+  section.querySelectorAll(`[id^="${prefix}"]`).forEach(d=>{if(!d.classList.contains('tabs'))d.style.display='none';});
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const target=document.getElementById(targetId);
+  if(target) target.style.display='block';
+  if(targetId==='icp-leaderboard') renderLeaderboard();
+}
+
+function analyzeTranscript(){
+  document.getElementById('transcriptResult').style.display='block';
+  showToast('Transcript analyzed — voice signals extracted');
+}
+
+function openLinkedIn(){document.getElementById('linkedinModal').classList.add('open');}
+function closeModal(){document.getElementById('linkedinModal').classList.remove('open');}
+function removeTag(el){el.closest('.icp-tag').remove();}
+function addTag(e,id){if(e.key==='Enter'){const v=e.target.value.trim();if(!v)return;const t=document.createElement('span');t.className='icp-tag';t.innerHTML=`${v} <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span>`;document.getElementById(id).appendChild(t);e.target.value='';}}
+function saveICP(){showToast('ICP definition saved');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// Init
+renderWeeklyPicks();
+renderDrafts();
+renderCalendar();
+</script>
+</body>
+</html>
