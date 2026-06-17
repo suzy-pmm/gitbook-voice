@@ -257,6 +257,7 @@ textarea{width:100%;padding:11px;border:1px solid #e0e0e0;border-radius:7px;font
   </div>
   <div id="weeklyTargeting" style="margin-bottom:16px;"></div>
   <div class="grid-2" id="weeklyPicks"></div>
+  <div id="customPostSection" style="margin-top:14px;"></div>
 </div>
 
 <!-- PUBLISHED QUEUE -->
@@ -879,6 +880,7 @@ function renderWeeklyPicks(){
     return;
   }
 
+  renderCustomPostSection();
   document.getElementById('weeklyPicks').innerHTML = p.picks.map((pk,i)=>{
     if(publishedKeys.has(`${currentPersona}-${i}`)) return '';
     const hasDraft = !!draftTexts[`${currentPersona}-${i}`];
@@ -960,31 +962,49 @@ function togglePublishUrl(){
 
 function publishFromDrawer(){
   if(!currentDrawer) return;
-  const {personaId, pickIdx} = currentDrawer;
+  const {personaId, pickIdx, custom} = currentDrawer;
   const url  = document.getElementById('drawerPostUrl').value.trim();
   const text = document.getElementById('drawerPostText').value;
-  const p    = getPersona(personaId);
-  const pk   = p.picks[pickIdx];
 
-  const post = {
-    id:          Date.now().toString(),
-    personaId,   pickIdx,
-    type:        pk.type,
-    tag:         pk.tag,
-    hook:        pk.hook,
-    post:        text,
-    url:         url || '',
-    date:        new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-    trendSource: pk.trendSource || null,
-    trendCreator:pk.trendCreator || null,
-    stats:       {impressions:'', reactions:'', comments:'', reposts:''}
-  };
+  let post;
+  if(custom || pickIdx === -1){
+    // Custom post — not tied to a pick slot
+    const hook = document.getElementById('drawerHook').textContent.replace(/^"|"$/g,'');
+    post = {
+      id:          Date.now().toString(),
+      personaId,   pickIdx:-1,
+      type:        'custom',
+      tag:         'Your idea',
+      hook,
+      post:        text,
+      url:         url || '',
+      date:        new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      trendSource: null,
+      trendCreator:null,
+      stats:       {impressions:'', reactions:'', comments:'', reposts:''}
+    };
+  } else {
+    const p  = getPersona(personaId);
+    const pk = p.picks[pickIdx];
+    post = {
+      id:          Date.now().toString(),
+      personaId,   pickIdx,
+      type:        pk.type,
+      tag:         pk.tag,
+      hook:        pk.hook,
+      post:        text,
+      url:         url || '',
+      date:        new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      trendSource: pk.trendSource || null,
+      trendCreator:pk.trendCreator || null,
+      stats:       {impressions:'', reactions:'', comments:'', reposts:''}
+    };
+    publishedKeys.add(`${personaId}-${pickIdx}`);
+    localStorage.setItem(LS_PUB_KEYS, JSON.stringify([...publishedKeys]));
+  }
 
   publishedQueue.unshift(post);
   localStorage.setItem(LS_QUEUE, JSON.stringify(publishedQueue));
-
-  publishedKeys.add(`${personaId}-${pickIdx}`);
-  localStorage.setItem(LS_PUB_KEYS, JSON.stringify([...publishedKeys]));
 
   closeDrawer();
   renderWeeklyPicks();
@@ -1375,6 +1395,97 @@ function removeTag(el){el.closest('.icp-tag').remove();}
 function addTag(e,id){if(e.key==='Enter'){const v=e.target.value.trim();if(!v)return;const t=document.createElement('span');t.className='icp-tag';t.innerHTML=`${v} <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span>`;document.getElementById(id).appendChild(t);e.target.value='';}}
 function saveICP(){showToast('ICP definition saved');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ─── CUSTOM POST ─────────────────────────────────────────────────
+function renderCustomPostSection(){
+  document.getElementById('customPostSection').innerHTML = `
+    <div style="border:1.5px dashed #c7d2fe;border-radius:10px;padding:18px 20px;background:#fafbff;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+        <div style="width:30px;height:30px;background:#ede9fe;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="ti ti-pencil-plus" style="font-size:15px;color:#6366f1;"></i>
+        </div>
+        <div>
+          <p style="font-size:13px;font-weight:600;color:#111;">Create your own post</p>
+          <p style="font-size:11px;color:#888;margin-top:1px;">Have an idea outside these picks? Add a prompt and get a v1 draft.</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:start;">
+        <div>
+          <label style="font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:4px;">Link (optional)</label>
+          <input type="url" id="customPostUrl" placeholder="https://..." style="width:100%;padding:8px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:4px;">What do you want to write about?</label>
+          <textarea id="customPostPrompt" rows="2" placeholder="e.g. I want to share a lesson from our last campaign — developers responded way better to pain-point messaging than feature messaging..." style="font-size:13px;border:1px solid #e0e0e0;border-radius:6px;padding:8px 11px;line-height:1.55;margin-bottom:0;"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+        <button class="btn btn-primary btn-sm" onclick="generateCustomDraft('${currentPersona}')"><i class="ti ti-sparkles"></i> Draft v1 post</button>
+      </div>
+    </div>`;
+}
+
+function generateCustomDraft(personaId){
+  const url    = document.getElementById('customPostUrl')?.value.trim()   || '';
+  const prompt = document.getElementById('customPostPrompt')?.value.trim() || '';
+  if(!prompt){ showToast('Add a prompt first'); return; }
+
+  const p = getPersona(personaId);
+
+  // Split prompt into sentences to structure the post
+  const sentences = prompt.replace(/([.!?])\s+/g,'$1|||').split('|||').map(s=>s.trim()).filter(Boolean);
+  const hook = sentences[0] || prompt;
+  const body = sentences.slice(1).join(' ');
+
+  // Pick-type hashtags based on targeting
+  const tagMap = {
+    pm:  ['#ProductManagement','#ProductStrategy','#B2BSaaS'],
+    dev: ['#DeveloperExperience','#DevTools','#SoftwareEngineering'],
+    tw:  ['#TechnicalWriting','#Documentation','#ContentStrategy']
+  };
+  const hashtags = [...new Set(p.targeting.flatMap(t=>tagMap[t]||[]))].slice(0,3);
+  hashtags.push('#GitBook');
+
+  // Closes by targeting
+  const closeMap = {
+    pm:  'What has your experience been with this?',
+    dev: 'How are you thinking about this on your team?',
+    tw:  'How do you approach this in your own workflow?'
+  };
+  const close = closeMap[p.targeting[0]] || 'What do you think?';
+
+  let draft = hook + '\n\n';
+  if(body){
+    draft += body + '\n\n';
+  } else {
+    draft += '[Expand here — what made you think of this, what data or experience backs it up, what would you tell someone facing this situation]\n\n';
+  }
+  if(url){
+    draft += 'Full piece linked in the comments.\n\n';
+  }
+  draft += close + '\n\n';
+  draft += hashtags.join(' ');
+
+  // Open drawer in custom mode
+  currentDrawer = {personaId, pickIdx:-1, custom:true, sourceUrl:url};
+
+  const tagEl = document.getElementById('drawerPickTag');
+  tagEl.textContent = 'Your idea';
+  tagEl.className   = 'pick-tag';
+  tagEl.style.color = '#6366f1';
+  document.getElementById('drawerHook').textContent = hook.length > 100 ? hook.slice(0,100)+'…' : hook;
+
+  document.getElementById('drawerPostText').value = draft;
+  updateDrawerCharCount();
+
+  document.getElementById('drawerPublishCheck').checked = false;
+  document.getElementById('drawerUrlRow').style.display  = 'none';
+  document.getElementById('drawerPublishBtn').style.display = 'none';
+  document.getElementById('drawerPostUrl').value = url;
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('postDrawer').classList.add('open');
+}
 
 // ─── PASSWORD GATE ───────────────────────────────────────────────
 const PW = 'quality';
