@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitBook Voice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;height:100vh;overflow:hidden;background:#f4f5f7;}
+.sidebar{width:232px;background:#0f1623;color:#fff;display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sidebar-logo h1{font-size:15px;font-weight:600;color:#fff;letter-spacing:-0.2px;}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px;}
+.persona-selector{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.persona-selector label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.35);display:block;margin-bottom:5px;}
+.persona-selector select{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:6px 9px;border-radius:5px;font-size:12px;cursor:pointer;font-family:inherit;}
+.sidebar-nav{flex:1;padding:10px 0;overflow-y:auto;}
+.nav-section-label{font-size:9px;text-transform:uppercase;letter-spacing:0.9px;color:rgba(255,255,255,0.28);padding:8px 18px 3px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 18px;color:rgba(255,255,255,0.55);cursor:pointer;font-size:13px;transition:all 0.12s;border-left:2px solid transparent;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.09);border-left-color:#6366f1;}
+.nav-item i{font-size:15px;width:17px;}
+.sidebar-bottom{padding:14px;border-top:1px solid rgba(255,255,255,0.07);}
+.icp-badge{background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.35);border-radius:6px;padding:8px 11px;cursor:pointer;}
+.icp-badge p{font-size:10px;color:rgba(255,255,255,0.45);}
+.icp-badge strong{font-size:12px;color:#fff;font-weight:500;}
+.main{flex:1;overflow-y:auto;background:#f4f5f7;}
+.section{display:none;padding:28px 32px;max-width:980px;}
+.section.active{display:block;}
+.section-header{margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start;}
+.section-header-text h2{font-size:19px;font-weight:600;color:#111;letter-spacing:-0.3px;}
+.section-header-text p{font-size:13px;color:#666;margin-top:3px;}
+.card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:18px 20px;margin-bottom:14px;}
+.card-sm{background:#fff;border-radius:7px;border:1px solid #e5e7eb;padding:12px 14px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500;}
+.badge-draft{background:#fef3c7;color:#92400e;}
+.badge-ready{background:#dbeafe;color:#1e40af;}
+.badge-published{background:#d1fae5;color:#065f46;}
+.badge-icp-high{background:#d1fae5;color:#065f46;}
+.badge-icp-mid{background:#fef3c7;color:#92400e;}
+.badge-icp-low{background:#fee2e2;color:#991b1b;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:6px;font-size:13px;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#333;transition:all 0.12s;font-family:inherit;}
+.btn:hover{background:#f5f5f5;}
+.btn-primary{background:#6366f1;color:#fff;border-color:#6366f1;}
+.btn-primary:hover{background:#4f46e5;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-danger{background:#fff;color:#dc2626;border-color:#fca5a5;}
+.btn-danger:hover{background:#fef2f2;}
+.pick-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:18px;transition:box-shadow 0.12s;position:relative;}
+.pick-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.07);}
+.pick-card.published-card{opacity:0.45;pointer-events:none;}
+.pick-tag{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:9px;}
+.pick-tag.trend{color:#0891b2;}
+.pick-tag.media{color:#7c3aed;}
+.pick-tag.evergreen{color:#059669;}
+.pick-tag.amplify{color:#d97706;}
+.pick-hook{font-size:14px;font-weight:500;color:#111;line-height:1.5;margin-bottom:8px;}
+.pick-angle{font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;}
+.pick-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:11px;color:#888;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;flex-shrink:0;}
+.trend-category-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#888;margin:20px 0 10px;}
+.trend-card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:8px;}
+.trend-card h4{font-size:13px;font-weight:500;color:#111;margin-bottom:5px;}
+.trend-card p{font-size:12px;color:#555;line-height:1.6;}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.metric-card{background:#f8f9fa;border-radius:8px;padding:13px 15px;}
+.metric-card .label{font-size:11px;color:#888;margin-bottom:5px;}
+.metric-card .value{font-size:21px;font-weight:600;color:#111;}
+.metric-card .sublabel{font-size:11px;color:#bbb;margin-top:2px;}
+.icp-tag{display:inline-flex;align-items:center;gap:3px;background:#f0f0f0;border-radius:4px;padding:3px 7px;font-size:12px;color:#333;margin:2px;}
+.icp-input-group{margin-bottom:18px;}
+.icp-input-group label{font-size:13px;font-weight:500;color:#333;display:block;margin-bottom:5px;}
+.icp-input-group input{padding:7px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;}
+.calendar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.cal-day{background:#fff;border-radius:8px;border:1px solid #e5e7eb;min-height:160px;padding:11px;}
+.cal-day-header{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:9px;}
+.cal-slot{border-radius:4px;padding:6px 8px;font-size:11px;margin-bottom:5px;}
+.cal-marketing{background:#dbeafe;color:#1e40af;}
+.cal-advocate{background:#fef3c7;color:#92400e;}
+.cal-pm{background:#ede9fe;color:#5b21b6;}
+.tabs{display:flex;border-bottom:1px solid #e5e7eb;margin-bottom:20px;}
+.tab{padding:9px 18px;font-size:13px;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.12s;}
+.tab:hover{color:#333;}
+.tab.active{color:#6366f1;border-bottom-color:#6366f1;font-weight:500;}
+.empty-state{text-align:center;padding:48px 24px;color:#aaa;}
+.empty-state i{font-size:36px;display:block;margin-bottom:12px;color:#ddd;}
+.empty-state p{font-size:13px;line-height:1.6;}
+.empty-state strong{color:#888;}
+.what-works{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:9px;padding:14px 18px;margin-bottom:18px;}
+.what-works h4{font-size:12px;font-weight:600;color:#0369a1;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.what-works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.what-works-item{font-size:12px;color:#444;}
+.what-works-item strong{font-weight:600;color:#111;}
+.post-row{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid #f0f0f0;}
+.post-row:last-child{border-bottom:none;}
+.post-row-body{flex:1;}
+.post-row-title{font-size:13px;font-weight:500;color:#111;margin-bottom:3px;line-height:1.5;}
+.post-row-meta{font-size:11px;color:#888;display:flex;gap:10px;margin-top:4px;}
+.post-row-stats{display:flex;gap:14px;min-width:260px;align-items:center;}
+.stat-item{text-align:center;}
+.stat-item .val{font-size:14px;font-weight:600;color:#111;display:block;}
+.stat-item .lbl{font-size:10px;color:#888;}
+.chart-container{position:relative;height:230px;margin-top:6px;}
+.toast{position:fixed;bottom:22px;right:22px;background:#1a1a1a;color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;display:none;z-index:9999;}
+.toast.show{display:block;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:800;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:26px;max-width:500px;width:100%;margin:20px;}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:7px;color:#111;}
+.modal p{font-size:13px;color:#555;line-height:1.65;margin-bottom:13px;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+textarea{width:100%;padding:11px;border:1px solid #e0e0e0;border-radius:7px;font-family:inherit;font-size:13px;line-height:1.6;color:#333;resize:vertical;}
+.char-count{font-size:11px;color:#888;text-align:right;margin-top:4px;}
+.icp-persona-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid;}
+.icp-dev{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;}
+.icp-pm{background:#f0fdf4;color:#166534;border-color:#bbf7d0;}
+.icp-tw{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff;}
+.targeting-block{background:#f8fafc;border-radius:7px;padding:10px 12px;margin-top:10px;border:1px solid #e5e7eb;}
+.targeting-block h5{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:#888;margin-bottom:7px;}
+.setup-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+.setup-banner i{font-size:18px;color:#d97706;flex-shrink:0;margin-top:1px;}
+
+/* ── PASSWORD GATE ── */
+#pwGate{position:fixed;inset:0;background:#0f1623;display:flex;align-items:center;justify-content:center;z-index:9999;}
+#pwGate.hidden{display:none;}
+.pw-box{background:#1a2436;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:36px 40px;width:360px;text-align:center;}
+.pw-box h2{font-size:17px;font-weight:600;color:#fff;margin-bottom:4px;letter-spacing:-0.2px;}
+.pw-box p{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:24px;}
+.pw-box input{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 14px;border-radius:7px;font-size:14px;font-family:inherit;text-align:center;letter-spacing:0.05em;outline:none;margin-bottom:10px;}
+.pw-box input:focus{border-color:rgba(99,102,241,0.7);}
+.pw-box input::placeholder{color:rgba(255,255,255,0.2);letter-spacing:normal;}
+.pw-box button{width:100%;background:#6366f1;color:#fff;border:none;border-radius:7px;padding:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;}
+.pw-box button:hover{background:#4f46e5;}
+.pw-error{font-size:12px;color:#f87171;margin-top:8px;min-height:18px;}
+
+/* ── TREND SOURCE BADGES ── */
+.trend-source{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.7px;padding:2px 8px;border-radius:20px;margin-bottom:8px;}
+.ts-competitor{background:#fee2e2;color:#991b1b;}
+.ts-market{background:#dbeafe;color:#1e40af;}
+.ts-media{background:#fef3c7;color:#92400e;}
+.ts-creator{background:#ede9fe;color:#5b21b6;}
+
+/* ── DEVELOP POST DRAWER ── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);display:none;z-index:700;}
+.drawer-overlay.open{display:block;}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:500px;background:#fff;box-shadow:-4px 0 28px rgba(0,0,0,0.13);transform:translateX(100%);transition:transform 0.22s cubic-bezier(0.4,0,0.2,1);z-index:701;display:flex;flex-direction:column;}
+.drawer.open{transform:translateX(0);}
+.drawer-header{padding:18px 20px 14px;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
+.drawer-header-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px;}
+.drawer-hook{font-size:14px;font-weight:500;color:#333;line-height:1.5;font-style:italic;}
+.drawer-body{flex:1;overflow-y:auto;padding:18px 20px;}
+.drawer-section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.7px;color:#888;margin-bottom:8px;}
+.drawer-footer{padding:14px 20px;border-top:1px solid #e5e7eb;display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fafafa;}
+.publish-box{border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-top:14px;background:#f9fafb;}
+.publish-box label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#333;cursor:pointer;}
+.publish-box input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#6366f1;}
+.publish-url-row{margin-top:10px;display:none;}
+.publish-url-row input{width:100%;padding:8px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;}
+
+/* ── PUBLISHED QUEUE ── */
+.queue-table{width:100%;border-collapse:collapse;}
+.queue-th{font-size:11px;color:#888;font-weight:500;text-align:left;padding:10px 12px;border-bottom:2px solid #f0f0f0;white-space:nowrap;}
+.queue-td{padding:12px 12px;font-size:13px;border-bottom:1px solid #f5f5f5;vertical-align:middle;}
+.queue-tr:last-child .queue-td{border-bottom:none;}
+.stat-input{width:72px;padding:5px 8px;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;text-align:center;font-family:inherit;color:#333;}
+.stat-input:focus{outline:none;border-color:#6366f1;}
+
+/* ── SETTINGS MODAL ── */
+.settings-modal-inner{background:#fff;border-radius:12px;width:100%;max-width:620px;margin:20px;max-height:88vh;display:flex;flex-direction:column;}
+.settings-modal-header{padding:20px 24px 0;flex-shrink:0;}
+.settings-modal-body{flex:1;overflow-y:auto;padding:0 24px 20px;}
+.settings-modal-footer{padding:14px 24px;border-top:1px solid #e5e7eb;display:flex;gap:8px;flex-shrink:0;}
+.settings-field{margin-bottom:14px;}
+.settings-field label{font-size:12px;font-weight:500;color:#444;display:block;margin-bottom:5px;}
+.settings-field input,.settings-field select{width:100%;padding:8px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;}
+.settings-field textarea{resize:vertical;font-size:13px;}
+.pick-edit-block{border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:12px;}
+.following-tag{display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border-radius:5px;padding:4px 10px;font-size:12px;margin:2px 3px 2px 0;}
+.following-type-badge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.following-tag button{background:none;border:none;cursor:pointer;color:#aaa;font-size:14px;padding:0;line-height:1;margin-left:1px;}
+.following-tag button:hover{color:#333;}
+.following-add-row{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+.following-add-row input,.following-add-row select{padding:7px 10px;border:1px solid #e0e0e0;border-radius:6px;font-size:12px;font-family:inherit;}
+.all-published-msg{text-align:center;padding:36px 24px;color:#888;}
+.all-published-msg i{font-size:32px;display:block;margin-bottom:10px;color:#10b981;}
+.all-published-msg p{font-size:13px;line-height:1.6;}
+</style>
+</head>
+<body>
+
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>GitBook Voice</h1>
+    <p>LinkedIn content engine</p>
+  </div>
+  <div class="persona-selector">
+    <label>Viewing as</label>
+    <select id="globalPersona" onchange="switchPersona(this.value)">
+      <option value="suzy">Suzy Everist — Product Marketing</option>
+      <option value="tal">Tal Gluck — DevRel</option>
+      <option value="addison">Addison Schultz — DevRel</option>
+    </select>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">This week</div>
+    <div class="nav-item active" onclick="showSection('weekly',this)"><i class="ti ti-sparkles"></i> Weekly Brief</div>
+    <div class="nav-item" onclick="showSection('queue',this)"><i class="ti ti-layout-list"></i> Published Queue</div>
+    <div class="nav-item" onclick="showSection('cadence',this)"><i class="ti ti-calendar"></i> Cadence Planner</div>
+    <div class="nav-section-label">Discover</div>
+    <div class="nav-item" onclick="showSection('trends',this)"><i class="ti ti-trending-up"></i> Trend Feed</div>
+    <div class="nav-item" onclick="showSection('transcripts',this)"><i class="ti ti-microphone"></i> Transcripts</div>
+    <div class="nav-section-label">Insights</div>
+    <div class="nav-item" onclick="showSection('analytics',this)"><i class="ti ti-chart-bar"></i> Analytics</div>
+    <div class="nav-item" onclick="showSection('icp',this)"><i class="ti ti-target"></i> ICP & Audience</div>
+    <div class="nav-section-label">Team</div>
+    <div class="nav-item" onclick="showSection('personas',this)"><i class="ti ti-users"></i> All Personas</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="icp-badge" onclick="showSection('icp',null)">
+      <p>Team ICP match rate</p>
+      <strong id="teamIcpRate">— Add posts to track</strong>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- WEEKLY BRIEF -->
+<div id="section-weekly" class="section active">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Weekly brief — <span id="weeklyPersonaName">Suzy Everist</span></h2>
+      <p>4 post options tailored to your role and audience. Develop, refine, and publish.</p>
+    </div>
+    <button class="btn btn-sm" onclick="openSettings(currentPersona)" style="flex-shrink:0;margin-top:4px;">
+      <i class="ti ti-settings"></i> Settings
+    </button>
+  </div>
+  <div id="weeklyTargeting" style="margin-bottom:16px;"></div>
+  <div class="grid-2" id="weeklyPicks"></div>
+  <div id="customPostSection" style="margin-top:14px;"></div>
+</div>
+
+<!-- PUBLISHED QUEUE -->
+<div id="section-queue" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Published queue</h2>
+      <p>All published posts across the team. Add stats after posting to track performance.</p>
+    </div>
+  </div>
+  <div id="queueContent"></div>
+</div>
+
+<!-- CADENCE -->
+<div id="section-cadence" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Cadence planner</h2>
+      <p>Recommended posting schedule based on your role and LinkedIn growth research.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="cadenceAvatar" class="avatar" style="background:#d1fae5;color:#065f46;">SE</div>
+      <div>
+        <p style="font-weight:600;font-size:14px;" id="cadencePersonaName">Suzy Everist</p>
+        <p style="font-size:12px;color:#666;" id="cadenceRec">Recommended: 3–4x per week · Mon, Wed, Thu, Fri</p>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <p style="font-size:11px;color:#888;">Best posting time</p>
+        <p style="font-weight:600;font-size:15px;" id="cadenceTime">8:30 AM</p>
+      </div>
+    </div>
+  </div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
+<!-- TRENDS -->
+<div id="section-trends" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Trend feed</h2>
+      <p>Signals across AI, developer tools, and technical writing. Click to generate a post for any persona.</p>
+    </div>
+  </div>
+  <div id="trendsContent"></div>
+</div>
+
+<!-- TRANSCRIPTS -->
+<div id="section-transcripts" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Transcript ingestion</h2>
+      <p>Paste a transcript to extract tone signals and build a voice profile for each person.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:12px;background:#f0fdf4;border-color:#bbf7d0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <i class="ti ti-plug-connected" style="font-size:18px;color:#16a34a;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:#166534;">Fireflies is connected</p>
+        <p style="font-size:12px;color:#15803d;">Ask Cowork: "Pull the transcript from last week's marketing sync and build Suzy's voice profile" — no copy-pasting needed.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:5px;">Assign to persona</label>
+      <select style="padding:7px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;width:100%;">
+        <option>Suzy Everist — Product Marketing</option>
+        <option>Tal Gluck — DevRel</option>
+        <option>Addison Schultz — DevRel</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:5px;">Paste transcript</label>
+      <textarea rows="9" placeholder="Paste your Fireflies transcript, Granola notes, or any meeting recording here..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="analyzeTranscript()"><i class="ti ti-cpu"></i> Analyze & extract voice signals</button>
+  </div>
+  <div id="transcriptResult" style="display:none;" class="card">
+    <h4 style="font-size:14px;font-weight:600;margin-bottom:14px;color:#111;">Voice signals extracted</h4>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Recurring phrases</p><p style="font-size:12px;color:#333;line-height:1.75;">Extracted from transcript — will appear here after analysis.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Strong POVs</p><p style="font-size:12px;color:#333;line-height:1.75;">Clear opinions and stances detected in the transcript.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Tone signals</p><p style="font-size:12px;color:#333;line-height:1.75;">Vocabulary patterns, sentence rhythm, formality level.</p></div>
+      <div class="card-sm"><p style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;">Topics they care about</p><p style="font-size:12px;color:#333;line-height:1.75;">Subject areas and themes that come up repeatedly.</p></div>
+    </div>
+    <div style="margin-top:13px;display:flex;gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="showToast('Voice signals saved to profile')">Save to voice profile</button>
+      <button class="btn btn-sm" onclick="document.getElementById('transcriptResult').style.display='none'">Discard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="section-analytics" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Analytics — <span class="persona-label">Suzy Everist</span></h2>
+      <p>Post performance. Patterns feed back into weekly brief picks once you have published posts.</p>
+    </div>
+  </div>
+  <div class="metric-grid" id="analyticsMetrics">
+    <div class="metric-card"><div class="label">Total impressions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Total reactions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Total reposts</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+    <div class="metric-card"><div class="label">Posts published</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'perf-posts')">Post performance</div>
+    <div class="tab" onclick="switchTab(this,'perf-patterns')">What's working</div>
+  </div>
+  <div id="perf-posts">
+    <div class="card"><div class="empty-state"><i class="ti ti-chart-bar"></i><p><strong>No published posts yet.</strong><br>Publish posts from the Weekly Brief and add stats to start tracking performance.</p></div></div>
+  </div>
+  <div id="perf-patterns" style="display:none;">
+    <div class="card"><div class="empty-state"><i class="ti ti-bulb"></i><p><strong>Patterns will appear here once you have a few published posts.</strong><br>The app will identify your best formats, topics, and posting times automatically.</p></div></div>
+  </div>
+</div>
+
+<!-- ICP -->
+<div id="section-icp" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>ICP & audience quality</h2>
+      <p>Define your ideal customer profiles and track how well each person's posts reach them over time.</p>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'icp-define')">ICP personas</div>
+    <div class="tab" onclick="switchTab(this,'icp-tracker')">Audience tracker</div>
+    <div class="tab" onclick="switchTab(this,'icp-leaderboard')">Team leaderboard</div>
+  </div>
+  <div id="icp-define">
+    <p style="font-size:13px;color:#555;margin-bottom:16px;">GitBook targets three ICP personas. Each team member owns content for one or more.</p>
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="card" style="border-top:3px solid #1d4ed8;"><div style="margin-bottom:10px;"><span class="icp-persona-pill icp-dev"><i class="ti ti-code" style="font-size:10px;"></i> Developer</span></div><p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">Senior engineers, tech leads, and engineering managers evaluating or using developer tools. Pain: fragmented docs slow their team down.</p><p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p><div style="display:flex;gap:4px;flex-wrap:wrap;"><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;">Addison Schultz</span><span style="background:#eff6ff;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;">Suzy Everist</span></div></div>
+      <div class="card" style="border-top:3px solid #16a34a;"><div style="margin-bottom:10px;"><span class="icp-persona-pill icp-pm"><i class="ti ti-layout-board" style="font-size:10px;"></i> Product Manager</span></div><p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">PMs and product leaders at mid-market to enterprise SaaS. Pain: misalignment between teams due to scattered specs and decisions.</p><p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p><div style="display:flex;gap:4px;flex-wrap:wrap;"><span style="background:#f0fdf4;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;">Suzy Everist</span></div></div>
+      <div class="card" style="border-top:3px solid #7e22ce;"><div style="margin-bottom:10px;"><span class="icp-persona-pill icp-tw"><i class="ti ti-writing" style="font-size:10px;"></i> Technical Writer</span></div><p style="font-size:12px;color:#333;line-height:1.65;margin-bottom:10px;">Technical writers and documentation leads at growing engineering teams. Pain: no system to keep docs accurate and current at scale.</p><p style="font-size:11px;color:#888;font-weight:500;margin-bottom:5px;">Content owned by</p><div style="display:flex;gap:4px;flex-wrap:wrap;"><span style="background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;font-size:11px;">Tal Gluck</span><span style="background:#fdf4ff;color:#7e22ce;border-radius:4px;padding:2px 7px;font-size:11px;">Addison Schultz</span></div></div>
+    </div>
+    <div class="card">
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:16px;">Firmographic criteria</h4>
+      <div class="icp-input-group"><label>Job titles</label><div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px;" id="icpTitles"><span class="icp-tag">Head of Engineering <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span><span class="icp-tag">VP Product <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span><span class="icp-tag">CTO <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span><span class="icp-tag">Technical Writer <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span><span class="icp-tag">Developer Advocate <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span><span class="icp-tag">Engineering Manager <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span></span></div><input type="text" placeholder="Add a title and press Enter" onkeydown="addTag(event,'icpTitles')" style="width:300px;padding:7px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;"></div>
+      <button class="btn btn-primary" onclick="saveICP()"><i class="ti ti-check"></i> Save ICP definition</button>
+    </div>
+  </div>
+  <div id="icp-tracker" style="display:none;"><div class="card"><div class="empty-state"><i class="ti ti-target"></i><p><strong>No audience data yet.</strong><br>Publish posts and add stats to start tracking ICP reach.</p></div></div></div>
+  <div id="icp-leaderboard" style="display:none;"><div class="card"><h4 style="font-size:14px;font-weight:600;margin-bottom:16px;">Team leaderboard — published posts</h4><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="border-bottom:2px solid #f0f0f0;"><th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">#</th><th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">Person</th><th style="text-align:left;padding:7px 0;color:#888;font-weight:500;">Targeting</th><th style="text-align:right;padding:7px 0;color:#888;font-weight:500;">Posts</th><th style="text-align:right;padding:7px 0;color:#888;font-weight:500;">Impressions</th></tr></thead><tbody id="leaderboardBody"></tbody></table></div></div>
+</div>
+
+<!-- PERSONAS -->
+<div id="section-personas" class="section">
+  <div class="section-header">
+    <div class="section-header-text">
+      <h2>Team personas</h2>
+      <p>3 voice profiles. Click any card to switch, or go to Transcripts to build out a voice profile.</p>
+    </div>
+  </div>
+  <div class="grid-2" id="personasGrid"></div>
+</div>
+
+</main>
+
+<!-- POST DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="postDrawer">
+  <div class="drawer-header">
+    <div class="drawer-header-top">
+      <div>
+        <div id="drawerPickTag" class="pick-tag" style="margin-bottom:5px;"></div>
+        <div id="drawerHook" class="drawer-hook"></div>
+      </div>
+      <button class="btn btn-sm" onclick="closeDrawer()" style="flex-shrink:0;"><i class="ti ti-x"></i></button>
+    </div>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section-label">Post copy</div>
+    <textarea id="drawerPostText" rows="16" oninput="updateDrawerCharCount()"></textarea>
+    <div class="char-count" id="drawerCharCount">0 / 3,000 characters</div>
+    <div class="publish-box">
+      <label>
+        <input type="checkbox" id="drawerPublishCheck" onchange="togglePublishUrl()">
+        Mark as published on LinkedIn
+      </label>
+      <div class="publish-url-row" id="drawerUrlRow">
+        <input type="url" id="drawerPostUrl" placeholder="Paste your LinkedIn post URL (optional but recommended)">
+      </div>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn btn-sm" onclick="copyDrawerPost()"><i class="ti ti-copy"></i> Copy</button>
+    <button class="btn btn-sm" onclick="saveDraftFromDrawer()"><i class="ti ti-bookmark"></i> Save draft</button>
+    <div style="flex:1;"></div>
+    <button class="btn btn-primary btn-sm" id="drawerPublishBtn" onclick="publishFromDrawer()" style="display:none;"><i class="ti ti-check"></i> Add to queue</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="settings-modal-inner">
+    <div class="settings-modal-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h3 id="settingsModalTitle" style="font-size:16px;font-weight:600;color:#111;">Settings</h3>
+        <button class="btn btn-sm" onclick="closeSettingsModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="tabs" id="settingsTabs" style="margin-bottom:0;">
+        <div class="tab active" onclick="switchSettingsTab(this,'s-profile')">Profile</div>
+        <div class="tab" onclick="switchSettingsTab(this,'s-picks')">Picks</div>
+        <div class="tab" onclick="switchSettingsTab(this,'s-following')">Media & Creators</div>
+      </div>
+    </div>
+    <div class="settings-modal-body">
+      <div id="s-profile" style="padding-top:16px;"></div>
+      <div id="s-picks" style="display:none;padding-top:16px;"></div>
+      <div id="s-following" style="display:none;padding-top:16px;"></div>
+    </div>
+    <div class="settings-modal-footer">
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()"><i class="ti ti-check"></i> Save changes</button>
+      <button class="btn btn-sm" onclick="closeSettingsModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- LINKEDIN MODAL -->
+<div class="modal-overlay" id="linkedinModal">
+  <div class="modal">
+    <h3>Push to LinkedIn</h3>
+    <p>To publish directly from GitBook Voice, connect via LinkedIn's OAuth API. Requires a LinkedIn Developer App with <strong>w_member_social</strong> permission.</p>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="showToast('LinkedIn connection coming soon')">Connect LinkedIn account</button>
+      <button class="btn btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────────────
+const ICP_TYPES = {
+  dev:  {label:'Developer',        cls:'icp-dev', icon:'ti-code'},
+  pm:   {label:'Product Manager',  cls:'icp-pm',  icon:'ti-layout-board'},
+  tw:   {label:'Technical Writer', cls:'icp-tw',  icon:'ti-writing'}
+};
+
+const TREND_SOURCES = {
+  competitor: {label:'Competitor',     cls:'ts-competitor'},
+  market:     {label:'Market signal',  cls:'ts-market'},
+  media:      {label:'Media',          cls:'ts-media'},
+  creator:    {label:'Creator',        cls:'ts-creator'}
+};
+
+// ─── STORAGE KEYS ──────────────────────────────────────────────────
+const LS_QUEUE    = 'gv_queue_v2';
+const LS_PUB_KEYS = 'gv_pub_keys_v2';
+const LS_DRAFTS   = 'gv_drafts_v2';
+const LS_FOLLOW   = 'gv_following_v2';
+const LS_SETTINGS = 'gv_settings_v2';
+
+// ─── RUNTIME STATE ────────────────────────────────────────────────
+let publishedKeys   = new Set(JSON.parse(localStorage.getItem(LS_PUB_KEYS) || '[]'));
+let draftTexts      = JSON.parse(localStorage.getItem(LS_DRAFTS)   || '{}');
+let publishedQueue  = JSON.parse(localStorage.getItem(LS_QUEUE)    || '[]');
+let followingMap    = JSON.parse(localStorage.getItem(LS_FOLLOW)   || '{}');
+let settingsOvr     = JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}');
+
+let currentPersona  = 'suzy';
+let currentDrawer   = null; // {personaId, pickIdx}
+let settingsPersonaId = null;
+
+// ─── PERSONA DATA ─────────────────────────────────────────────────
+const personas = {
+  suzy:{
+    name:'Suzy Everist', role:'Product Marketing', initials:'SE', color:'#d1fae5', tc:'#065f46',
+    targeting:['pm','dev'],
+    targetingNote:'Suzy reaches PMs and developers — positioning GitBook as the platform that aligns both audiences.',
+    angle:'Positioning in ambiguous categories, ABM-driven paid strategy, and translating developer tools into language that makes budget holders say yes',
+    tone:'Conversational strategist. Leads with real data ("our CTR is 0.25%, best practice is 0.4%") before the interpretation. Naturally reframes everything as a positioning question — "what problem are we solving for them?" Category-tension thinker who\'s comfortable with market ambiguity: "we\'re in this weird period where that term hasn\'t been solidified." Collaborative builder who phrases opinions as explorations. Balances vision with buyer readiness — if your one-liner requires defending, it\'s not done yet. Critiques marketing from the inside without being cynical. Short punchy sentences mixed with longer exploratory ones. Ends on an open question or an unresolved edge, not a tidy bow.',
+    media:[], voiceReady:true,
+    freq:'3–4x per week', days:'Mon, Wed, Thu, Fri', time:'8:30 AM',
+    cadence:{
+      mon:[{t:'GTM / positioning take',s:'8:30 AM',cls:'cal-marketing'}],
+      tue:[],
+      wed:[{t:'Competitive insight',s:'9:00 AM',cls:'cal-marketing'}],
+      thu:[{t:'Marketing framework',s:'8:30 AM',cls:'cal-marketing'}],
+      fri:[{t:'Campaign lesson',s:'4:00 PM',cls:'cal-marketing'}],
+      sat:[]
+    },
+    picks:[
+      {type:'trend', tag:'Trend take', trendSource:'market', trendCreator:'',
+       hook:"AI tools are quietly undermining your product's reputation. Most PMs don't know it yet.",
+       angle:'For product managers and developers: AI assistants are now where your users go for help first. If your docs are outdated, every wrong answer those tools give is on you.',
+       reach:'Est. 6–9k impressions',
+       post:`AI tools are quietly undermining your product's reputation. Most PMs don't know it yet.
+
+A developer uses Cursor or Claude to integrate with your API. The AI gives a confident answer based on your public docs. But the docs describe your product as it was two product cycles ago.
+
+The developer tries it. It fails. They don't file a ticket. They just stop.
+
+This shows up as an activation problem, a retention problem, a "why is our free-to-paid conversion stuck" problem. Nobody connects it back to documentation.
+
+The teams ahead of this are treating docs like a product surface. Someone owns them. They update on the same schedule as features. There is a process for flagging stale content.
+
+AI search has raised the stakes. When your docs are wrong, AI tools confidently repeat that wrong answer to everyone who asks.
+
+When did your team last check whether your docs reflect your current product?
+
+#ProductManagement #DeveloperExperience #Documentation #AI`},
+      {type:'media', tag:'Media reaction',
+       hook:"We tested LinkedIn ads against 170 developer and PM accounts. The thing that drove clicks wasn't what I expected.",
+       angle:'For PMs managing developer-facing products: what messaging actually resonates with technical audiences, and what falls flat. Practical learnings from real campaign data.',
+       reach:'Est. 5–8k impressions',
+       post:`We spent a month testing LinkedIn ads against a list of 170 developer and PM accounts. CTR: 0.25%. LinkedIn best practice is 0.4%.
+
+The ads that performed worst led with product UI screenshots. The ones that got traction named a specific workflow problem.
+
+Developers don't click ads. But they will click something that names a pain they recognize.
+
+The harder problem is what happens after the click. If the landing page opens with a tagline about "AI-native documentation" and doesn't immediately say what problem it solves, you've lost them.
+
+Most developer-facing marketing talks to the wrong person with the right message, or the right person with the wrong message. Getting both right at the same time is the actual work.
+
+What has been your best-performing angle for reaching technical audiences?
+
+#ProductManagement #DeveloperExperience #B2BMarketing #DeveloperTools`},
+      {type:'evergreen', tag:'Evergreen authority',
+       hook:"The fastest way to find which docs are hurting your activation rate takes about an afternoon.",
+       angle:'For PMs who own developer products: a practical method for identifying documentation gaps that quietly kill adoption, using data you already have.',
+       reach:'Est. 8–12k impressions',
+       post:`The fastest way to find which docs are hurting your activation rate takes an afternoon and costs nothing.
+
+Pull your 20 most common support tickets from the last 90 days. Extract the question each one is actually asking.
+
+Now search your documentation for each of those questions.
+
+Count how many return nothing useful, or surface an article that is clearly out of date.
+
+That is your documentation gap. In my experience it is also your activation gap. The lists tend to be identical.
+
+Most teams treat docs as a publishing problem: write them once, ship them, move on. The teams with the best activation rates treat them as a feedback loop. Support tickets are the feedback signal. They are just rarely framed that way.
+
+When did you last map your support queue to your docs coverage?
+
+#ProductManagement #DeveloperExperience #Documentation #ProductGrowth`},
+      {type:'amplify', tag:'Content amplify',
+       hook:"I have lived in Barcelona for three years. I am still learning Spanish. Then AI happened.",
+       angle:"Amplifies this week's GitBook blog on MCP vs skill.md. Written for PMs and developers who are also trying to keep up with the AI glossary — personal angle, quick explainer, link handoff.",
+       reach:'Est. 3–6k impressions',
+       source:'https://www.gitbook.com/blog/mcp-vs-skill-md-difference-why-you-need-both',
+       post:`I have lived in Barcelona for three years. I am still learning Spanish.
+
+Then AI happened and now I am learning two languages at once.
+
+MCP. skill.md. RAG pipelines. Context windows. Half the time I am nodding in meetings and quietly Googling the terms afterward.
+
+So when Steve and our content team put together a plain-English breakdown of MCP vs skill.md, I actually read the whole thing.
+
+The short version: MCP is how AI agents connect to your data. skill.md tells them what to do with it once they get there. You need both, and most teams are only building one.
+
+If you are also out here learning two languages right now, link is in the comments.
+
+#AI #ProductManagement #Documentation #DeveloperExperience`}
+    ]
+  },
+  tal:{
+    name:'Tal Gluck', role:'DevRel', initials:'TG', color:'#e0f2fe', tc:'#075985',
+    targeting:['tw'],
+    targetingNote:'Tal primarily reaches technical writers — building authority on documentation craft, tooling, and knowledge systems.',
+    angle:'Building developer communities, technical education, and helping teams build knowledge systems that actually work',
+    tone:'Not yet captured — add a Fireflies transcript to build Tal\'s voice profile.',
+    media:[], voiceReady:false,
+    freq:'3x per week', days:'Tuesday, Thursday, Friday', time:'9:00 AM',
+    cadence:{
+      mon:[],
+      tue:[{t:'Community / docs take',s:'9:00 AM',cls:'cal-advocate'}],
+      wed:[],
+      thu:[{t:'Technical insight',s:'9:30 AM',cls:'cal-advocate'}],
+      fri:[{t:'Week in DevRel',s:'4:30 PM',cls:'cal-advocate'}],
+      sat:[]
+    },
+    picks:[
+      {type:'trend', tag:'Trend take', trendSource:'market', trendCreator:'',
+       hook:"The technical writer's job has changed more in the last 18 months than in the previous decade. Not for the reason most people assume.",
+       angle:'For technical writers navigating a shifting role: a grounded take on where the durable value of the TW craft sits in a world with AI-generated first drafts.',
+       reach:'Est. 5–8k impressions',
+       post:`The technical writer's job has changed more in the last 18 months than in the previous decade. The reason is not AI replacing writers.
+
+The reason is that engineers are now generating more documentation than ever. AI tools make prose cheap to produce. A first draft that used to take a day now takes 20 minutes.
+
+What's left is harder to automate: knowing when a doc is wrong. Recognizing when the structure doesn't match how a user actually navigates a product. Catching contradictions across a 200-page knowledge base.
+
+The writers doing well right now shifted from "I write the docs" to "I own the documentation system." That is a different job. It requires different instincts. It is also much harder to replace.
+
+What has changed most in your TW workflow over the last year?
+
+#TechnicalWriting #Documentation #AITools #DocumentationStrategy`},
+      {type:'media', tag:'Media reaction',
+       hook:"Skill MD files are showing up in every developer tool. Most technical writers I've talked to aren't sure what to do with them.",
+       angle:'For technical writers who work with engineering teams: Skill MD is a new documentation surface being written without documentation discipline. Here is why it matters and what TWs should own.',
+       reach:'Est. 4–7k impressions',
+       post:`Skill MD files are appearing in almost every AI coding tool now. Most technical writers I have talked to are unsure what to make of them.
+
+A Skill MD is a structured document that tells an AI coding assistant how to work with a particular tool or codebase. It is documentation, but written to be read by a model, not a human. The format is new. The discipline required to write it well is not.
+
+Engineers are writing these right now, often without the documentation instincts that make them consistent and complete. Edge cases get missed. Terminology drifts across sections. There is no process for keeping them current when the product changes.
+
+This is a documentation problem. It is also a new surface for technical writers to own.
+
+The teams doing it well have a TW reviewing the Skill MD the same way they would review any external-facing doc. Voice is consistent. Coverage is complete. There is a process for updates.
+
+Have you worked on a Skill MD yet, or is this still landing in engineering at your company?
+
+#TechnicalWriting #Documentation #AITools #DeveloperExperience`},
+      {type:'evergreen', tag:'Evergreen authority',
+       hook:"The structure your team creates naturally and the structure your users actually need are almost never the same thing.",
+       angle:'An evergreen take on information architecture — the most common structural mistake in developer documentation and the single question that fixes it.',
+       reach:'Est. 6–10k impressions',
+       post:`The documentation structure your team creates naturally and the structure your users actually need are almost never the same thing.
+
+Teams organize docs around how the product was built: by feature, by team, by release. Users navigate docs around what they are trying to do.
+
+A developer integrating a payments API does not care which team owns the webhook logic. They want to find "how do I handle failed payments" without navigating three different sections.
+
+The gap between product-centric structure and task-centric structure is where most documentation friction lives. It is also usually invisible until you watch someone actually try to use your docs.
+
+You do not need a complete rewrite to fix it. You need a different question asked during the planning stage: what is this person trying to accomplish, and does our structure make that path clear?
+
+How do you decide where a new doc lives when you are starting from scratch?
+
+#TechnicalWriting #InformationArchitecture #DocumentationStrategy #DeveloperExperience`},
+      {type:'amplify', tag:'Content amplify',
+       hook:"Just got back from Write the Docs Portland. Five things still on my mind.",
+       angle:"Amplifies the GitBook blog on Write the Docs Portland 2026. Tal was there — first-person angle lands well with his technical writer audience.",
+       reach:'Est. 3–5k impressions',
+       source:'https://www.gitbook.com/blog/write-the-docs-portland-2026',
+       post:`Just got back from Write the Docs Portland.
+
+Five things still on my mind.
+
+The conversation about AI and technical writing is more nuanced than the headlines suggest. Most people in that room are not worried about replacement. They are trying to figure out what good looks like when AI handles the first draft.
+
+The short answer, from a lot of conversations last week: structure and accuracy. Those are the things AI gets wrong most consistently. Those are also the things that matter most to readers.
+
+We wrote up our five takeaways from the week. Link in the comments.
+
+What did you take away if you were there?
+
+#TechnicalWriting #WriteTheDocs #Documentation #DevRel`}
+    ]
+  },
+  addison:{
+    name:'Addison Schultz', role:'DevRel', initials:'AS', color:'#ede9fe', tc:'#5b21b6',
+    targeting:['dev','tw'],
+    targetingNote:'Addison bridges developers and technical writers — focusing on the craft of documentation and developer education.',
+    angle:'Technical content strategy, developer education, and the craft of documentation that actually helps people build',
+    tone:'Not yet captured — add a Fireflies transcript to build Addison\'s voice profile.',
+    media:[], voiceReady:false,
+    freq:'3x per week', days:'Monday, Wednesday, Friday', time:'9:30 AM',
+    cadence:{
+      mon:[{t:'Docs insight',s:'9:30 AM',cls:'cal-pm'}],
+      tue:[],
+      wed:[{t:'Education take',s:'9:30 AM',cls:'cal-pm'}],
+      thu:[],
+      fri:[{t:'Content craft',s:'10:00 AM',cls:'cal-pm'}],
+      sat:[]
+    },
+    picks:[
+      {type:'trend', tag:'Trend take', trendSource:'market', trendCreator:'',
+       hook:"The line between developer docs and technical writing is blurring. Most teams have not updated their process to match.",
+       angle:'For developers and technical writers who work on documentation together: the collaboration model most teams use is outdated for how documentation actually gets made now.',
+       reach:'Est. 5–8k impressions',
+       post:`The line between developer documentation and technical writing is blurring. Most teams have not updated their process to match.
+
+Engineers write more documentation than ever, driven by AI tools that make prose cheap. Technical writers make more tooling decisions, driven by the complexity of modern documentation platforms.
+
+The teams struggling most are the ones where these roles still operate separately. Writers reviewing code examples they cannot run. Engineers writing conceptual guides they do not have the context to explain accurately.
+
+The teams doing it well have figured out that the asset is the documentation system, not the individual doc. Someone owns the structure. Someone owns the tooling. Someone owns quality across both.
+
+What does collaboration between devs and TWs look like on your team right now?
+
+#TechnicalWriting #DeveloperExperience #Documentation #DevRel`},
+      {type:'media', tag:'Media reaction',
+       hook:"The Write the Docs annual survey is out. One number I keep coming back to.",
+       angle:'For technical writers and developers who work closely with documentation: a practical reading of what the data says about where documentation work actually breaks down.',
+       reach:'Est. 4–6k impressions',
+       post:`The Write the Docs annual survey is out.
+
+The number I keep coming back to: a significant portion of technical writers report spending more than half their time on work that is not writing — reviews, tooling maintenance, stakeholder coordination, ticket triage.
+
+This matches what I see. The role has grown in scope without the title or resources catching up.
+
+There is a version of this that makes sense. Documentation work is more than writing, and the best technical writers understand the whole system. But there is another version where "does everything" means "owns nothing," and the quality of the actual docs suffers.
+
+The distinction is usually whether the TW has authority to say no. To push back on a request that does not serve users. To prioritize based on impact rather than whoever asked last.
+
+Scope without authority is just more work.
+
+How do you protect time for the work that actually matters?
+
+#TechnicalWriting #WriteTheDocs #DocumentationStrategy #DevRel`},
+      {type:'evergreen', tag:'Evergreen authority',
+       hook:"The API doc problem nobody talks about: the reference is complete and developers still can't integrate your product.",
+       angle:"For developers frustrated by technically correct but practically useless docs, and for technical writers trying to understand why thorough API reference isn't helping adoption.",
+       reach:'Est. 7–11k impressions',
+       post:`The API documentation problem nobody talks about: the reference is complete and developers still cannot integrate your product.
+
+Every field is documented. Every endpoint is listed. Auth is covered. A developer trying to build a basic integration still spends two hours in your community Slack asking questions that are not in the docs.
+
+The problem is usually not missing information. It is missing structure. The reference is organized around what the API does. The developer needs something organized around what they are trying to accomplish.
+
+The fix is almost always the same: a getting started guide that walks through the most common use case from start to finish, with working code. Not a conceptual overview. Not a list of everything the API can do. A single working example, from auth to first successful response.
+
+What is the one doc your users need that does not exist yet?
+
+#TechnicalWriting #DeveloperExperience #APIDocs #Documentation`},
+      {type:'amplify', tag:'Content amplify',
+       hook:"We built a complete docs site using Claude, MCP, and skill.md. Here is what actually happened.",
+       angle:"Amplifies the GitBook engineering blog on building with Claude, MCP and skill.md. Real practitioner takeaways for developers and technical writers.",
+       reach:'Est. 4–7k impressions',
+       source:'https://www.gitbook.com/blog/blog-building-documentation-with-claude-mcp-and-skill-md',
+       post:`We built a complete docs site using Claude, MCP, and skill.md. Here is what actually happened.
+
+The MCP connection worked. The agent could retrieve docs. But it still could not produce a coherent system on its own.
+
+What changed it: adding the skill.md file. Once the agent had behavioral instructions alongside the data connection, it could work through tasks reliably.
+
+The lesson is not that AI solves documentation. It is that documentation quality determines how useful AI can be. Bad docs going in means bad agent behavior coming out.
+
+Full writeup in the comments. Worth reading if you are building anything agent-related.
+
+What has been your experience combining AI tools with documentation?
+
+#TechnicalWriting #DeveloperExperience #AI #Documentation`}
+    ]
+  }
+};
+
+// ─── PERSONA HELPERS ─────────────────────────────────────────────
+function getPersona(id){
+  const base = personas[id];
+  const ovr  = settingsOvr[id];
+  if(!ovr) return {...base, following: followingMap[id]||[]};
+  return {
+    ...base, ...ovr,
+    picks: ovr.picks || base.picks,
+    following: followingMap[id]||[]
+  };
+}
+
+function renderTargetingPills(targeting){
+  return targeting.map(t=>{
+    const typ=ICP_TYPES[t];
+    return `<span class="icp-persona-pill ${typ.cls}"><i class="ti ${typ.icon}" style="font-size:10px;"></i> ${typ.label}</span>`;
+  }).join(' ');
+}
+
+function trendSourceBadge(src, creator){
+  if(!src) return '';
+  const ts = TREND_SOURCES[src];
+  if(!ts) return '';
+  const label = (src==='creator' && creator) ? creator : ts.label;
+  return `<span class="trend-source ${ts.cls}"><i class="ti ti-${src==='competitor'?'sword':src==='market'?'chart-line':src==='media'?'news':'user'}" style="font-size:9px;"></i> ${label}</span>`;
+}
+
+// ─── PERSONA / SECTION SWITCHING ────────────────────────────────
+function switchPersona(id){
+  currentPersona = id;
+  const p = getPersona(id);
+  document.getElementById('weeklyPersonaName').textContent = p.name;
+  document.querySelectorAll('.persona-label').forEach(el=>el.textContent=p.name);
+  const ca = document.getElementById('cadenceAvatar');
+  ca.textContent=p.initials; ca.style.background=p.color; ca.style.color=p.tc;
+  document.getElementById('cadencePersonaName').textContent = p.name;
+  document.getElementById('cadenceRec').textContent = `Recommended: ${p.freq} · ${p.days}`;
+  document.getElementById('cadenceTime').textContent = p.time;
+  renderWeeklyPicks();
+  renderCalendar();
+  renderAnalyticsSection();
+}
+
+function showSection(name, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(name==='personas') renderPersonas();
+  if(name==='trends')   renderTrends();
+  if(name==='queue')    renderQueue();
+  if(name==='icp' && document.getElementById('icp-leaderboard').style.display!=='none') renderLeaderboard();
+}
+
+// ─── WEEKLY BRIEF ────────────────────────────────────────────────
+function renderWeeklyPicks(){
+  const p = getPersona(currentPersona);
+  const banner = !p.voiceReady
+    ? `<div class="setup-banner"><i class="ti ti-microphone"></i><div><p style="font-size:13px;font-weight:500;color:#92400e;margin-bottom:3px;">Voice profile not yet set up for ${p.name}</p><p style="font-size:12px;color:#b45309;line-height:1.6;">These posts use a generic tone. Add a Fireflies transcript to personalise them to ${p.name.split(' ')[0]}'s actual voice.</p></div></div>`
+    : '';
+
+  document.getElementById('weeklyTargeting').innerHTML = `
+    ${banner}
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;">
+      <span style="font-size:12px;color:#888;font-weight:500;">Targeting:</span>
+      ${renderTargetingPills(p.targeting)}
+      <span style="font-size:12px;color:#666;margin-left:4px;">— ${p.targetingNote}</span>
+    </div>
+  `;
+
+  const activePicks = p.picks.filter((_,i)=>!publishedKeys.has(`${currentPersona}-${i}`));
+
+  if(!activePicks.length){
+    document.getElementById('weeklyPicks').innerHTML = `
+      <div style="grid-column:1/-1;">
+        <div class="all-published-msg">
+          <i class="ti ti-circle-check" style="color:#10b981;font-size:36px;display:block;margin-bottom:10px;"></i>
+          <p><strong style="color:#333;">All picks published this week.</strong><br>Head to the Published Queue to review performance, or update picks in Settings.</p>
+        </div>
+      </div>`;
+    return;
+  }
+
+  renderCustomPostSection();
+  document.getElementById('weeklyPicks').innerHTML = p.picks.map((pk,i)=>{
+    if(publishedKeys.has(`${currentPersona}-${i}`)) return '';
+    const hasDraft = !!draftTexts[`${currentPersona}-${i}`];
+    return `
+      <div class="pick-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+          <div>
+            ${pk.type==='trend' ? trendSourceBadge(pk.trendSource, pk.trendCreator) : ''}
+            <div class="pick-tag ${pk.type}">${pk.tag}</div>
+          </div>
+          ${hasDraft ? '<span style="font-size:10px;background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 7px;font-weight:500;">Draft saved</span>' : ''}
+        </div>
+        <div class="pick-hook">"${pk.hook}"</div>
+        <div class="pick-angle">${pk.angle}</div>
+        ${pk.source ? `<div style="margin-bottom:8px;"><a href="${pk.source}" target="_blank" style="font-size:11px;color:#d97706;text-decoration:none;display:inline-flex;align-items:center;gap:3px;"><i class="ti ti-external-link" style="font-size:11px;"></i> Source article</a></div>` : ''}
+        <div class="pick-meta"><span>📊 ${pk.reach}</span><span>📅 ${p.days.split(',')[0].trim()} ${p.time}</span></div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openDrawer('${currentPersona}',${i})"><i class="ti ti-pencil"></i> Develop post</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── DEVELOP POST DRAWER ─────────────────────────────────────────
+function openDrawer(personaId, pickIdx){
+  currentDrawer = {personaId, pickIdx};
+  const p  = getPersona(personaId);
+  const pk = p.picks[pickIdx];
+
+  const tagEl = document.getElementById('drawerPickTag');
+  tagEl.textContent  = pk.tag;
+  tagEl.className    = 'pick-tag '+pk.type;
+  document.getElementById('drawerHook').textContent = '"'+pk.hook+'"';
+
+  const saved = draftTexts[`${personaId}-${pickIdx}`] || pk.post;
+  document.getElementById('drawerPostText').value = saved;
+  updateDrawerCharCount();
+
+  document.getElementById('drawerPublishCheck').checked = false;
+  document.getElementById('drawerUrlRow').style.display  = 'none';
+  document.getElementById('drawerPublishBtn').style.display = 'none';
+  document.getElementById('drawerPostUrl').value = '';
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('postDrawer').classList.add('open');
+}
+
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('postDrawer').classList.remove('open');
+}
+
+function updateDrawerCharCount(){
+  const n = document.getElementById('drawerPostText').value.length;
+  const el = document.getElementById('drawerCharCount');
+  el.textContent = `${n.toLocaleString()} / 3,000 characters`;
+  el.style.color = n > 3000 ? '#dc2626' : '#888';
+}
+
+function copyDrawerPost(){
+  const text = document.getElementById('drawerPostText').value;
+  navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard'));
+}
+
+function saveDraftFromDrawer(){
+  if(!currentDrawer) return;
+  const {personaId, pickIdx} = currentDrawer;
+  draftTexts[`${personaId}-${pickIdx}`] = document.getElementById('drawerPostText').value;
+  localStorage.setItem(LS_DRAFTS, JSON.stringify(draftTexts));
+  renderWeeklyPicks();
+  showToast('Draft saved');
+}
+
+function togglePublishUrl(){
+  const checked = document.getElementById('drawerPublishCheck').checked;
+  document.getElementById('drawerUrlRow').style.display     = checked ? 'block' : 'none';
+  document.getElementById('drawerPublishBtn').style.display = checked ? 'inline-flex' : 'none';
+}
+
+function publishFromDrawer(){
+  if(!currentDrawer) return;
+  const {personaId, pickIdx, custom} = currentDrawer;
+  const url  = document.getElementById('drawerPostUrl').value.trim();
+  const text = document.getElementById('drawerPostText').value;
+
+  let post;
+  if(custom || pickIdx === -1){
+    // Custom post — not tied to a pick slot
+    const hook = document.getElementById('drawerHook').textContent.replace(/^"|"$/g,'');
+    post = {
+      id:          Date.now().toString(),
+      personaId,   pickIdx:-1,
+      type:        'custom',
+      tag:         'Your idea',
+      hook,
+      post:        text,
+      url:         url || '',
+      date:        new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      trendSource: null,
+      trendCreator:null,
+      stats:       {impressions:'', reactions:'', comments:'', reposts:''}
+    };
+  } else {
+    const p  = getPersona(personaId);
+    const pk = p.picks[pickIdx];
+    post = {
+      id:          Date.now().toString(),
+      personaId,   pickIdx,
+      type:        pk.type,
+      tag:         pk.tag,
+      hook:        pk.hook,
+      post:        text,
+      url:         url || '',
+      date:        new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      trendSource: pk.trendSource || null,
+      trendCreator:pk.trendCreator || null,
+      stats:       {impressions:'', reactions:'', comments:'', reposts:''}
+    };
+    publishedKeys.add(`${personaId}-${pickIdx}`);
+    localStorage.setItem(LS_PUB_KEYS, JSON.stringify([...publishedKeys]));
+  }
+
+  publishedQueue.unshift(post);
+  localStorage.setItem(LS_QUEUE, JSON.stringify(publishedQueue));
+
+  closeDrawer();
+  renderWeeklyPicks();
+  showToast('Post added to queue');
+}
+
+// ─── PUBLISHED QUEUE ─────────────────────────────────────────────
+function renderQueue(){
+  const container = document.getElementById('queueContent');
+  if(!publishedQueue.length){
+    container.innerHTML = `<div class="card"><div class="empty-state"><i class="ti ti-layout-list"></i><p><strong>No published posts yet.</strong><br>Develop a post from the Weekly Brief, check "Mark as published," and it will appear here with a row to log your stats.</p></div></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="queue-table">
+        <thead>
+          <tr>
+            <th class="queue-th">Post</th>
+            <th class="queue-th">Persona</th>
+            <th class="queue-th">Type</th>
+            <th class="queue-th">Source</th>
+            <th class="queue-th" style="text-align:right;">Impressions</th>
+            <th class="queue-th" style="text-align:right;">Reactions</th>
+            <th class="queue-th" style="text-align:right;">Reposts</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${publishedQueue.map(post=>{
+            const p = personas[post.personaId];
+            const srcBadge = post.trendSource
+              ? `<span class="trend-source ${TREND_SOURCES[post.trendSource]?.cls||''}">${post.trendCreator && post.trendSource==='creator' ? post.trendCreator : TREND_SOURCES[post.trendSource]?.label||post.trendSource}</span>`
+              : `<span style="color:#ccc;font-size:12px;">—</span>`;
+            return `
+              <tr class="queue-tr">
+                <td class="queue-td" style="max-width:240px;">
+                  <div style="font-size:13px;font-weight:500;color:#111;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${post.hook}</div>
+                  ${post.url
+                    ? `<a href="${post.url}" target="_blank" style="font-size:11px;color:#6366f1;display:inline-flex;align-items:center;gap:3px;"><i class="ti ti-brand-linkedin" style="font-size:10px;"></i> View post</a>`
+                    : `<span style="font-size:11px;color:#ccc;">No URL added</span>`}
+                  <div style="font-size:11px;color:#aaa;margin-top:2px;">${post.date}</div>
+                </td>
+                <td class="queue-td">
+                  <div style="display:flex;align-items:center;gap:7px;">
+                    <div class="avatar" style="width:26px;height:26px;font-size:10px;background:${p.color};color:${p.tc};">${p.initials}</div>
+                    <span style="font-size:12px;color:#333;">${p.name.split(' ')[0]}</span>
+                  </div>
+                </td>
+                <td class="queue-td"><span class="pick-tag ${post.type}" style="margin:0;display:inline-block;">${post.tag}</span></td>
+                <td class="queue-td">${srcBadge}</td>
+                <td class="queue-td" style="text-align:right;"><input type="text" class="stat-input" placeholder="—" value="${post.stats.impressions}" oninput="updateStat('${post.id}','impressions',this.value)"></td>
+                <td class="queue-td" style="text-align:right;"><input type="text" class="stat-input" placeholder="—" value="${post.stats.reactions}" oninput="updateStat('${post.id}','reactions',this.value)"></td>
+                <td class="queue-td" style="text-align:right;"><input type="text" class="stat-input" placeholder="—" value="${post.stats.reposts}" oninput="updateStat('${post.id}','reposts',this.value)"></td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function updateStat(postId, field, value){
+  const post = publishedQueue.find(p=>p.id===postId);
+  if(post){
+    post.stats[field] = value;
+    localStorage.setItem(LS_QUEUE, JSON.stringify(publishedQueue));
+    updateAnalyticsMetrics();
+  }
+}
+
+function updateAnalyticsMetrics(){
+  const personaPosts = publishedQueue.filter(p=>p.personaId===currentPersona);
+  if(!personaPosts.length) return;
+  const totalImpr  = personaPosts.reduce((s,p)=>s+(parseInt(p.stats.impressions)||0),0);
+  const totalReact = personaPosts.reduce((s,p)=>s+(parseInt(p.stats.reactions)||0),0);
+  const totalRep   = personaPosts.reduce((s,p)=>s+(parseInt(p.stats.reposts)||0),0);
+  const count      = personaPosts.length;
+  document.getElementById('analyticsMetrics').innerHTML = `
+    <div class="metric-card"><div class="label">Total impressions</div><div class="value">${totalImpr.toLocaleString()||'—'}</div><div class="sublabel">${count} post${count!==1?'s':''}</div></div>
+    <div class="metric-card"><div class="label">Total reactions</div><div class="value">${totalReact.toLocaleString()||'—'}</div><div class="sublabel">${count} post${count!==1?'s':''}</div></div>
+    <div class="metric-card"><div class="label">Total reposts</div><div class="value">${totalRep.toLocaleString()||'—'}</div><div class="sublabel">${count} post${count!==1?'s':''}</div></div>
+    <div class="metric-card"><div class="label">Posts published</div><div class="value">${count}</div><div class="sublabel">This persona</div></div>`;
+}
+
+// ─── SETTINGS MODAL ──────────────────────────────────────────────
+function openSettings(personaId){
+  settingsPersonaId = personaId;
+  const p = getPersona(personaId);
+  document.getElementById('settingsModalTitle').textContent = `${p.name} — Settings`;
+
+  renderSettingsProfile(personaId);
+  renderSettingsPicks(personaId);
+  renderSettingsFollowing(personaId);
+
+  // reset to first tab
+  const tabs = document.querySelectorAll('#settingsTabs .tab');
+  tabs.forEach(t=>t.classList.remove('active'));
+  tabs[0].classList.add('active');
+  ['s-profile','s-picks','s-following'].forEach((id,i)=>{
+    document.getElementById(id).style.display = i===0 ? 'block' : 'none';
+  });
+
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function closeSettingsModal(){
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function switchSettingsTab(el, tabId){
+  document.querySelectorAll('#settingsTabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['s-profile','s-picks','s-following'].forEach(id=>{
+    document.getElementById(id).style.display = id===tabId ? 'block' : 'none';
+  });
+}
+
+function renderSettingsProfile(personaId){
+  const p = getPersona(personaId);
+  document.getElementById('s-profile').innerHTML = `
+    <div class="settings-field"><label>Name</label><input type="text" id="s-name" value=""></div>
+    <div class="settings-field"><label>Role</label><input type="text" id="s-role" value=""></div>
+    <div class="settings-field"><label>Targeting (comma-separated: pm, dev, tw)</label><input type="text" id="s-targeting" value=""></div>
+    <div class="settings-field"><label>Angle / focus area</label><textarea id="s-angle" rows="3"></textarea></div>
+    <div class="settings-field"><label>Voice fingerprint / tone</label><textarea id="s-tone" rows="5"></textarea></div>`;
+  document.getElementById('s-name').value      = p.name;
+  document.getElementById('s-role').value      = p.role;
+  document.getElementById('s-targeting').value = p.targeting.join(', ');
+  document.getElementById('s-angle').value     = p.angle;
+  document.getElementById('s-tone').value      = p.tone;
+}
+
+function renderSettingsPicks(personaId){
+  const p = getPersona(personaId);
+  document.getElementById('s-picks').innerHTML = p.picks.map((pk,i)=>`
+    <div class="pick-edit-block">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <span class="pick-tag ${pk.type}" style="margin:0;">${pk.tag}</span>
+        ${pk.type==='trend' ? `
+          <select id="s-pk-src-${i}" style="padding:4px 8px;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;font-family:inherit;">
+            <option value="">Source type...</option>
+            <option value="competitor">Competitor</option>
+            <option value="market">Market signal</option>
+            <option value="media">Media</option>
+            <option value="creator">Creator</option>
+          </select>
+          <input type="text" id="s-pk-creator-${i}" placeholder="Creator name (if type = creator)" style="flex:1;min-width:120px;padding:4px 8px;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;font-family:inherit;">
+        ` : ''}
+      </div>
+      <div class="settings-field" style="margin-bottom:8px;"><label>Hook</label><input type="text" id="s-pk-hook-${i}"></div>
+      <div class="settings-field" style="margin-bottom:8px;"><label>Post copy</label><textarea id="s-pk-post-${i}" rows="6"></textarea></div>
+      ${pk.type==='amplify' ? `<div class="settings-field" style="margin-bottom:0;"><label>Source URL</label><input type="url" id="s-pk-surl-${i}"></div>` : ''}
+    </div>`).join('');
+  // set values after render
+  p.picks.forEach((pk,i)=>{
+    const hookEl = document.getElementById(`s-pk-hook-${i}`);
+    const postEl = document.getElementById(`s-pk-post-${i}`);
+    const srcEl  = document.getElementById(`s-pk-src-${i}`);
+    const crEl   = document.getElementById(`s-pk-creator-${i}`);
+    const surlEl = document.getElementById(`s-pk-surl-${i}`);
+    if(hookEl) hookEl.value = pk.hook;
+    if(postEl) postEl.value = pk.post;
+    if(srcEl)  srcEl.value  = pk.trendSource||'';
+    if(crEl)   crEl.value   = pk.trendCreator||'';
+    if(surlEl) surlEl.value = pk.source||'';
+  });
+}
+
+function renderSettingsFollowing(personaId){
+  const following = followingMap[personaId] || [];
+  const typeColors = {
+    creator:  {bg:'#ede9fe',tc:'#5b21b6'},
+    media:    {bg:'#dbeafe',tc:'#1e40af'},
+    competitor:{bg:'#fee2e2',tc:'#991b1b'},
+    market:   {bg:'#fef3c7',tc:'#92400e'}
+  };
+  document.getElementById('s-following').innerHTML = `
+    <p style="font-size:13px;color:#555;margin-bottom:14px;line-height:1.6;">Add the creators, media outlets, competitors, and market signals you follow. This personalizes which trends surface in your picks.</p>
+    <div id="followingList" style="min-height:32px;">
+      ${following.map((f,i)=>{
+        const c = typeColors[f.type]||{bg:'#f3f4f6',tc:'#374151'};
+        return `<span class="following-tag">
+          <span class="following-type-badge" style="background:${c.bg};color:${c.tc};">${f.type}</span>
+          ${f.name}
+          ${f.url ? `<a href="${f.url}" target="_blank" style="color:#6366f1;font-size:11px;margin-left:1px;">↗</a>` : ''}
+          <button onclick="removeFollowing('${personaId}',${i})">×</button>
+        </span>`;
+      }).join('')}
+      ${!following.length ? '<span style="font-size:12px;color:#ccc;">No sources added yet</span>' : ''}
+    </div>
+    <div class="following-add-row">
+      <input type="text" id="s-follow-name" placeholder="Name" style="flex:1;min-width:120px;">
+      <select id="s-follow-type">
+        <option value="creator">Creator</option>
+        <option value="media">Media</option>
+        <option value="competitor">Competitor</option>
+        <option value="market">Market signal</option>
+      </select>
+      <input type="url" id="s-follow-url" placeholder="LinkedIn URL (optional)" style="flex:2;min-width:160px;">
+      <button class="btn btn-sm btn-primary" onclick="addFollowing('${personaId}')"><i class="ti ti-plus"></i> Add</button>
+    </div>`;
+}
+
+function addFollowing(personaId){
+  const name = document.getElementById('s-follow-name').value.trim();
+  const type = document.getElementById('s-follow-type').value;
+  const url  = document.getElementById('s-follow-url').value.trim();
+  if(!name) return;
+  if(!followingMap[personaId]) followingMap[personaId] = [];
+  followingMap[personaId].push({name, type, url});
+  localStorage.setItem(LS_FOLLOW, JSON.stringify(followingMap));
+  renderSettingsFollowing(personaId);
+}
+
+function removeFollowing(personaId, idx){
+  if(followingMap[personaId]){
+    followingMap[personaId].splice(idx,1);
+    localStorage.setItem(LS_FOLLOW, JSON.stringify(followingMap));
+    renderSettingsFollowing(personaId);
+  }
+}
+
+function saveSettings(){
+  const id = settingsPersonaId;
+  const p  = getPersona(id);
+
+  const name      = document.getElementById('s-name').value.trim();
+  const role      = document.getElementById('s-role').value.trim();
+  const tRaw      = document.getElementById('s-targeting').value;
+  const targeting = tRaw.split(',').map(t=>t.trim()).filter(t=>['pm','dev','tw'].includes(t));
+  const angle     = document.getElementById('s-angle').value.trim();
+  const tone      = document.getElementById('s-tone').value.trim();
+
+  const picks = p.picks.map((pk,i)=>{
+    const hook   = document.getElementById(`s-pk-hook-${i}`)?.value || pk.hook;
+    const post   = document.getElementById(`s-pk-post-${i}`)?.value || pk.post;
+    const tsrc   = document.getElementById(`s-pk-src-${i}`)?.value  || pk.trendSource;
+    const tcr    = document.getElementById(`s-pk-creator-${i}`)?.value || pk.trendCreator;
+    const surl   = document.getElementById(`s-pk-surl-${i}`)?.value  || pk.source;
+    return {...pk, hook, post, trendSource:tsrc, trendCreator:tcr, source:surl};
+  });
+
+  settingsOvr[id] = {name, role, targeting, angle, tone, picks};
+  localStorage.setItem(LS_SETTINGS, JSON.stringify(settingsOvr));
+  personas[id] = {...personas[id], name, role, targeting, angle, tone, picks};
+
+  // update selector label
+  const opt = document.querySelector(`#globalPersona option[value="${id}"]`);
+  if(opt) opt.textContent = `${name} — ${role}`;
+
+  closeSettingsModal();
+  if(currentPersona===id) switchPersona(id);
+  showToast('Settings saved');
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────
+function renderCalendar(){
+  const p = getPersona(currentPersona);
+  const days   = ['mon','tue','wed','thu','fri'];
+  const labels = {mon:'Monday',tue:'Tuesday',wed:'Wednesday',thu:'Thursday',fri:'Friday'};
+  document.getElementById('calendarGrid').innerHTML = days.map(day=>`
+    <div class="cal-day">
+      <div class="cal-day-header">${labels[day]}</div>
+      ${p.cadence[day].length
+        ? p.cadence[day].map(s=>`<div class="cal-slot ${s.cls}"><strong>${s.s}</strong><br>${s.t}</div>`).join('')
+        : '<div style="font-size:11px;color:#ccc;padding:6px 0;">Rest day</div>'}
+    </div>`).join('');
+}
+
+// ─── ANALYTICS ───────────────────────────────────────────────────
+function renderAnalyticsSection(){
+  const personaPosts = publishedQueue.filter(p=>p.personaId===currentPersona);
+  if(!personaPosts.length){
+    document.getElementById('analyticsMetrics').innerHTML = `
+      <div class="metric-card"><div class="label">Total impressions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+      <div class="metric-card"><div class="label">Total reactions</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+      <div class="metric-card"><div class="label">Total reposts</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>
+      <div class="metric-card"><div class="label">Posts published</div><div class="value">—</div><div class="sublabel">No posts yet</div></div>`;
+  } else {
+    updateAnalyticsMetrics();
+  }
+}
+
+// ─── TRENDS ──────────────────────────────────────────────────────
+function renderTrends(){
+  const trends = {
+    'AI & LLMs':[
+      {title:"LLMs are writing API reference — and nobody's reviewing it", summary:"Teams are shipping AI-generated API docs at scale. Early data shows 1-in-4 contain errors that block developer adoption.", persona:'Addison Schultz', source:'market'},
+      {title:"The hallucination problem in technical documentation", summary:"AI-generated docs have a reliability problem. Companies relying purely on LLMs for technical content are seeing support ticket spikes.", persona:'Tal Gluck', source:'media'},
+      {title:"AI documentation tools: feature war vs. outcome war", summary:"Dozens of tools are adding AI features. The question is whether teams care about AI or about better documentation outcomes.", persona:'Suzy Everist', source:'market'}
+    ],
+    'Developer Tools':[
+      {title:"The docs-as-code movement is hitting enterprise", summary:"What started in open source is now standard in engineering orgs over 200 people. Git-based documentation workflows are the new norm.", persona:'Addison Schultz', source:'market'},
+      {title:"Developer onboarding time: the hidden cost nobody measures", summary:"Poor documentation adds 3–6 weeks to developer onboarding in mid-market companies. Teams that measure it see 40% improvement.", persona:'Suzy Everist', source:'market'},
+      {title:"Shift-left documentation: writing docs before the code ships", summary:"Leading engineering teams are treating documentation as a prerequisite for feature launch, not an afterthought.", persona:'Tal Gluck', source:'market'}
+    ],
+    'Technical Writing':[
+      {title:"Technical writers are becoming knowledge architects", summary:"The role is evolving fast. The best tech writers in 2026 are less 'wordsmith' and more 'information system designer.'", persona:'Addison Schultz', source:'media'},
+      {title:"Measuring documentation quality: the metrics that actually matter", summary:"Beyond page views: teams now track search success rate, time-to-answer, and support deflection as documentation KPIs.", persona:'Suzy Everist', source:'market'}
+    ]
+  };
+  document.getElementById('trendsContent').innerHTML = Object.entries(trends).map(([cat,items])=>`
+    <div class="trend-category-label">${cat}</div>
+    ${items.map(t=>`
+      <div class="trend-card">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            ${trendSourceBadge(t.source,'')}
+          </div>
+          <h4>${t.title}</h4>
+          <p>${t.summary}</p>
+          <p style="font-size:11px;color:#888;margin-top:5px;">Best fit: ${t.persona}</p>
+        </div>
+        <div style="flex-shrink:0;"><button class="btn btn-primary btn-sm" onclick="showToast('Post generated — saved to weekly brief')">Generate post</button></div>
+      </div>`).join('')}`).join('');
+}
+
+// ─── PERSONAS ────────────────────────────────────────────────────
+function renderPersonas(){
+  document.getElementById('personasGrid').innerHTML = Object.entries(personas).map(([id,p])=>`
+    <div class="card" style="cursor:pointer;" onclick="document.getElementById('globalPersona').value='${id}';switchPersona('${id}');showSection('weekly',null)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+        <div class="avatar" style="background:${p.color};color:${p.tc};">${p.initials}</div>
+        <div>
+          <p style="font-weight:600;font-size:14px;color:#111;">${p.name}</p>
+          <p style="font-size:11px;color:#666;">${p.role}</p>
+        </div>
+        <div style="margin-left:auto;">
+          ${p.voiceReady
+            ? '<span style="font-size:11px;background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;">Voice ready</span>'
+            : '<span style="font-size:11px;background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 7px;">No voice yet</span>'}
+        </div>
+      </div>
+      <p style="font-size:12px;color:#444;line-height:1.6;margin-bottom:10px;">${p.angle}</p>
+      ${p.voiceReady ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 13px;margin-bottom:10px;"><p style="font-size:10px;font-weight:600;color:#065f46;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">Voice fingerprint</p><p style="font-size:12px;color:#333;line-height:1.65;">${p.tone}</p></div>` : ''}
+      <div class="targeting-block">
+        <h5>Targeting ICP personas</h5>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">${renderTargetingPills(p.targeting)}</div>
+        <p style="font-size:11px;color:#666;line-height:1.5;">${p.targetingNote}</p>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:10px;">
+        <span>${p.freq}</span>
+        <span style="color:${p.voiceReady?'#059669':'#d97706'}">${p.voiceReady?'Voice profile active ✓':'Add transcript to activate'}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ─── LEADERBOARD ─────────────────────────────────────────────────
+function renderLeaderboard(){
+  document.getElementById('leaderboardBody').innerHTML = Object.entries(personas).map(([id,p],i)=>{
+    const posts  = publishedQueue.filter(q=>q.personaId===id);
+    const impr   = posts.reduce((s,q)=>s+(parseInt(q.stats.impressions)||0),0);
+    return `
+      <tr style="border-bottom:1px solid #f5f5f5;">
+        <td style="padding:10px 0;color:#888;font-size:13px;">${i+1}</td>
+        <td style="padding:10px 0;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar" style="width:28px;height:28px;font-size:10px;background:${p.color};color:${p.tc};">${p.initials}</div>
+            <div><div style="font-size:13px;font-weight:500;">${p.name}</div><div style="font-size:11px;color:#888;">${p.role}</div></div>
+          </div>
+        </td>
+        <td style="padding:10px 0;">${renderTargetingPills(p.targeting)}</td>
+        <td style="text-align:right;padding:10px 0;font-size:13px;">${posts.length||'—'}</td>
+        <td style="text-align:right;padding:10px 0;font-size:13px;">${impr?impr.toLocaleString():'—'}</td>
+      </tr>`;
+  }).join('');
+}
+
+// ─── MISC ─────────────────────────────────────────────────────────
+function switchTab(el, targetId){
+  const section = el.closest('.section');
+  const prefix  = targetId.split('-')[0]+'-';
+  section.querySelectorAll(`[id^="${prefix}"]`).forEach(d=>{if(!d.classList.contains('tabs'))d.style.display='none';});
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const target = document.getElementById(targetId);
+  if(target) target.style.display='block';
+  if(targetId==='icp-leaderboard') renderLeaderboard();
+}
+
+function analyzeTranscript(){
+  document.getElementById('transcriptResult').style.display='block';
+  showToast('Transcript analyzed — voice signals extracted');
+}
+
+function openLinkedIn(){document.getElementById('linkedinModal').classList.add('open');}
+function closeModal(){document.getElementById('linkedinModal').classList.remove('open');}
+function removeTag(el){el.closest('.icp-tag').remove();}
+function addTag(e,id){if(e.key==='Enter'){const v=e.target.value.trim();if(!v)return;const t=document.createElement('span');t.className='icp-tag';t.innerHTML=`${v} <span style="cursor:pointer;margin-left:3px;color:#aaa;" onclick="removeTag(this)">×</span>`;document.getElementById(id).appendChild(t);e.target.value='';}}
+function saveICP(){showToast('ICP definition saved');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ─── CUSTOM POST ─────────────────────────────────────────────────
+function renderCustomPostSection(){
+  document.getElementById('customPostSection').innerHTML = `
+    <div style="border:1.5px dashed #c7d2fe;border-radius:10px;padding:18px 20px;background:#fafbff;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+        <div style="width:30px;height:30px;background:#ede9fe;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="ti ti-pencil-plus" style="font-size:15px;color:#6366f1;"></i>
+        </div>
+        <div>
+          <p style="font-size:13px;font-weight:600;color:#111;">Create your own post</p>
+          <p style="font-size:11px;color:#888;margin-top:1px;">Have an idea outside these picks? Add a prompt and get a v1 draft.</p>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;align-items:start;">
+        <div>
+          <label style="font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:4px;">Link (optional)</label>
+          <input type="url" id="customPostUrl" placeholder="https://..." style="width:100%;padding:8px 11px;border:1px solid #e0e0e0;border-radius:6px;font-size:13px;font-family:inherit;">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:4px;">What do you want to write about?</label>
+          <textarea id="customPostPrompt" rows="2" placeholder="e.g. I want to share a lesson from our last campaign — developers responded way better to pain-point messaging than feature messaging..." style="font-size:13px;border:1px solid #e0e0e0;border-radius:6px;padding:8px 11px;line-height:1.55;margin-bottom:0;"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+        <button class="btn btn-primary btn-sm" onclick="generateCustomDraft('${currentPersona}')"><i class="ti ti-sparkles"></i> Draft v1 post</button>
+      </div>
+    </div>`;
+}
+
+function generateCustomDraft(personaId){
+  const url    = document.getElementById('customPostUrl')?.value.trim()   || '';
+  const prompt = document.getElementById('customPostPrompt')?.value.trim() || '';
+  if(!prompt){ showToast('Add a prompt first'); return; }
+
+  const p = getPersona(personaId);
+
+  // Split prompt into sentences to structure the post
+  const sentences = prompt.replace(/([.!?])\s+/g,'$1|||').split('|||').map(s=>s.trim()).filter(Boolean);
+  const hook = sentences[0] || prompt;
+  const body = sentences.slice(1).join(' ');
+
+  // Pick-type hashtags based on targeting
+  const tagMap = {
+    pm:  ['#ProductManagement','#ProductStrategy','#B2BSaaS'],
+    dev: ['#DeveloperExperience','#DevTools','#SoftwareEngineering'],
+    tw:  ['#TechnicalWriting','#Documentation','#ContentStrategy']
+  };
+  const hashtags = [...new Set(p.targeting.flatMap(t=>tagMap[t]||[]))].slice(0,3);
+  hashtags.push('#GitBook');
+
+  // Closes by targeting
+  const closeMap = {
+    pm:  'What has your experience been with this?',
+    dev: 'How are you thinking about this on your team?',
+    tw:  'How do you approach this in your own workflow?'
+  };
+  const close = closeMap[p.targeting[0]] || 'What do you think?';
+
+  let draft = hook + '\n\n';
+  if(body){
+    draft += body + '\n\n';
+  } else {
+    draft += '[Expand here — what made you think of this, what data or experience backs it up, what would you tell someone facing this situation]\n\n';
+  }
+  if(url){
+    draft += 'Full piece linked in the comments.\n\n';
+  }
+  draft += close + '\n\n';
+  draft += hashtags.join(' ');
+
+  // Open drawer in custom mode
+  currentDrawer = {personaId, pickIdx:-1, custom:true, sourceUrl:url};
+
+  const tagEl = document.getElementById('drawerPickTag');
+  tagEl.textContent = 'Your idea';
+  tagEl.className   = 'pick-tag';
+  tagEl.style.color = '#6366f1';
+  document.getElementById('drawerHook').textContent = hook.length > 100 ? hook.slice(0,100)+'…' : hook;
+
+  document.getElementById('drawerPostText').value = draft;
+  updateDrawerCharCount();
+
+  document.getElementById('drawerPublishCheck').checked = false;
+  document.getElementById('drawerUrlRow').style.display  = 'none';
+  document.getElementById('drawerPublishBtn').style.display = 'none';
+  document.getElementById('drawerPostUrl').value = url;
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('postDrawer').classList.add('open');
+}
+
+
+// ─── INIT ────────────────────────────────────────────────────────
+renderWeeklyPicks();
+renderCalendar();
+renderAnalyticsSection();
+</script>
+</body>
+</html>
