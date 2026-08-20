@@ -193,19 +193,6 @@ textarea{width:100%;padding:11px;border:1px solid #e0e0e0;border-radius:7px;font
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
-<div id="pwGate">
-  <div class="pw-box">
-    <div style="width:36px;height:36px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    <h2>GitBook Voice</h2>
-    <p>Team access only</p>
-    <input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()">
-    <button onclick="checkPassword()">Continue</button>
-    <div class="pw-error" id="pwError"></div>
-  </div>
-</div>
 
 <div class="sidebar">
   <div class="sidebar-logo">
@@ -1487,26 +1474,6 @@ function generateCustomDraft(personaId){
   document.getElementById('postDrawer').classList.add('open');
 }
 
-// ─── PASSWORD GATE ───────────────────────────────────────────────
-const PW = 'quality';
-function checkPassword(){
-  const val = document.getElementById('pwInput').value;
-  if(val === PW){
-    sessionStorage.setItem('gv_auth','1');
-    document.getElementById('pwGate').classList.add('hidden');
-    document.getElementById('pwInput').value='';
-    document.getElementById('pwError').textContent='';
-  } else {
-    const err = document.getElementById('pwError');
-    err.textContent = 'Incorrect password — try again';
-    document.getElementById('pwInput').value='';
-    document.getElementById('pwInput').focus();
-    setTimeout(()=>{err.textContent='';},3000);
-  }
-}
-if(sessionStorage.getItem('gv_auth')==='1'){
-  document.getElementById('pwGate').classList.add('hidden');
-}
 
 // ─── INIT ────────────────────────────────────────────────────────
 renderWeeklyPicks();
